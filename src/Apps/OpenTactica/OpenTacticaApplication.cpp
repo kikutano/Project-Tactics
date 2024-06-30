@@ -4,7 +4,7 @@
 #include "Component/CharacterFacing.h"
 #include "Component/RotateItem.h"
 #include "Component/RotateAroundPoint.h"
-#include "Component//TranslateItem.h"
+#include "Component/TranslateItem.h"
 
 #include "States/DemoSimpleState.h"
 #include "States/EmptyState.h"
@@ -44,7 +44,7 @@ HashId OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBui
 
 std::string OpenTacticaApplication::_initializePongDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
 	fsmBuilder
-		.state<LoadState>("Load", serviceLocator, "_demoPong/resources.json", "pongDemo", "spriteCamera")
+		.state<LoadState>("Load", serviceLocator, "_demoPong/resources.json", "pongDemo"_id, "spriteCamera"_id)
 		.on("proceed").jumpTo("Sprites")
 		.onAppExitRequest().jumpTo("Unload")
 
@@ -52,11 +52,11 @@ std::string OpenTacticaApplication::_initializePongDemo(ServiceLocator& serviceL
 		.on("exit").jumpTo("Unload")
 		.onAppExitRequest().jumpTo("Unload")
 
-		.state<UnloadState>("Unload", serviceLocator, "pongDemo")
+		.state<UnloadState>("Unload", serviceLocator, "pongDemo"_id)
 		.on("proceed").exitFsm()
 		.onAppExitRequest().exitFsm();
 
-	return "Load";
+	return "Load"_id;
 }
 
 HashId OpenTacticaApplication::_initializeSpriteDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
