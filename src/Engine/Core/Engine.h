@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <Libs/Utility/Time/FrameTimer.h>
+
 struct SDL_Window;
 
 namespace tactics {
@@ -35,13 +37,17 @@ private:
 	void _initializeSDL();
 	void _internalRun();
 	void _shutdown();
+	void _registerOverlays();
+	void _unregisterOverlays();
 	void _throwIfAnyResourceIsStillLoaded();
+	void _throwIfAnyImportantLogHappened();
 
 	void _setupServiceLocator();
 	void _setupFsm(Application& application);
 
 	void _updateCommonComponentSystems();
 
+	FrameTimer _timer;
 	std::unique_ptr<FileSystem> _fileSystem;
 	std::unique_ptr<resource::ResourceSystem> _resourceSystem;
 	std::unique_ptr<OverlaySystem> _overlaySystem;

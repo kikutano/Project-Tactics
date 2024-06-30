@@ -24,8 +24,8 @@ void OpenTacticaApplication::setupComponentReflections() {
 	defineComponentsReflection<BattleCamera, CharacterFacing, RotateItem, RotateAroundPoint>();
 }
 
-std::string OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
-	auto configFile = serviceLocator.getService<resource::ResourceSystem>().getResource<resource::IniFile>("devUserConfigFile");
+HashId OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
+	auto configFile = serviceLocator.getService<resource::ResourceSystem>().getResource<resource::IniFile>("devUserConfigFile"_id);
 	auto state = configFile->getOrCreate("demo", "fsm", std::string("map"));
 
 	return _initializePongDemo(serviceLocator, fsmBuilder);
@@ -58,9 +58,9 @@ std::string OpenTacticaApplication::_initializePongDemo(ServiceLocator& serviceL
 	return "Load";
 }
 
-std::string OpenTacticaApplication::_initializeSpriteDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
+HashId OpenTacticaApplication::_initializeSpriteDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
 	fsmBuilder
-		.state<LoadState>("Load", serviceLocator, "_demoSprites/resources.json", "demoSprites", "spriteCamera")
+		.state<LoadState>("Load", serviceLocator, "_demoSprites/resources.json", "demoSprites"_id, "spriteCamera"_id)
 		.on("proceed").jumpTo("Sprites")
 		.onAppExitRequest().jumpTo("Unload")
 
@@ -68,16 +68,16 @@ std::string OpenTacticaApplication::_initializeSpriteDemo(ServiceLocator& servic
 		.on("exit").jumpTo("Unload")
 		.onAppExitRequest().jumpTo("Unload")
 
-		.state<UnloadState>("Unload", serviceLocator, "demoSprites")
+		.state<UnloadState>("Unload", serviceLocator, "demoSprites"_id)
 		.on("proceed").exitFsm()
 		.onAppExitRequest().exitFsm();
 
-	return "Load";
+	return "Load"_id;
 }
 
-std::string OpenTacticaApplication::_initializeMapDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
+HashId OpenTacticaApplication::_initializeMapDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
 	fsmBuilder
-		.state<LoadState>("Load", serviceLocator, "_demoMaps/resources.lua", "demoMaps", "mapCamera")
+		.state<LoadState>("Load", serviceLocator, "_demoMaps/resources.lua", "demoMaps"_id, "mapCamera"_id)
 		.on("proceed").jumpTo("Map")
 		.onAppExitRequest().jumpTo("Unload")
 
@@ -85,16 +85,16 @@ std::string OpenTacticaApplication::_initializeMapDemo(ServiceLocator& serviceLo
 		.on("exit").jumpTo("Unload")
 		.onAppExitRequest().jumpTo("Unload")
 
-		.state<UnloadState>("Unload", serviceLocator, "demoMaps")
+		.state<UnloadState>("Unload", serviceLocator, "demoMaps"_id)
 		.on("proceed").exitFsm()
 		.onAppExitRequest().exitFsm();
 
-	return "Load";
+	return "Load"_id;
 }
 
-std::string OpenTacticaApplication::_initializeSimpleDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
+HashId OpenTacticaApplication::_initializeSimpleDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
 	fsmBuilder
-		.state<LoadState>("Load", serviceLocator, "_demoSimple/resources.json", "demoSimple", "rotateAroundCamera")
+		.state<LoadState>("Load", serviceLocator, "_demoSimple/resources.json", "demoSimple"_id, "rotateAroundCamera"_id)
 		.on("proceed").jumpTo("DemoScene")
 
 		.state<DemoSimpleState>("DemoScene", serviceLocator)
@@ -106,11 +106,11 @@ std::string OpenTacticaApplication::_initializeSimpleDemo(ServiceLocator& servic
 		.on("proceed").jumpTo("Unload")
 		.onAppExitRequest().jumpTo("Unload")
 
-		.state<UnloadState>("Unload", serviceLocator, "demoSimple")
+		.state<UnloadState>("Unload", serviceLocator, "demoSimple"_id)
 		.on("proceed").exitFsm()
 		.onAppExitRequest().exitFsm();
 
-	return "Load";
+	return "Load"_id;
 }
 
 }

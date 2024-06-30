@@ -24,8 +24,8 @@ public:
 
 	void clearScene(bool clearCameras = false);
 
-	const entt::registry& getRegistry() const;
-	entt::registry& getRegistry();
+	[[nodiscard]] const entt::registry& getRegistry() const;
+	[[nodiscard]] entt::registry& getRegistry();
 
 	Entity createViewport(
 		const glm::vec2& topLeft,
@@ -33,7 +33,7 @@ public:
 		const glm::vec4& clearColor = Color::black);
 
 	Entity createCamera(
-		std::string_view name,
+		const HashId& name,
 		const glm::vec3& position,
 		const glm::vec3& direction,
 		const glm::vec3& up,
@@ -44,17 +44,18 @@ public:
 
 	Entity createEntity(
 		const glm::vec3& position,
-		std::string_view meshName,
-		std::vector<std::string> materials,
+		const HashId& meshName,
+		const std::vector<HashId>& materials,
 		const glm::quat& rotation = Quaternion::identity,
 		const glm::vec3& scale = Vector3::one);
 
 	Entity createEntity(
-		std::string_view name,
-		std::string_view prefabName
+		const HashId& name,
+		const HashId& prefabName
 	);
 
-	Entity getCurrentCamera();
+	[[nodiscard]] Entity getEntityByName(const HashId& name);
+	[[nodiscard]] Entity getCurrentCamera();
 
 private:
 	void _onMeshConstructed(entt::registry& registry, entt::entity entity);

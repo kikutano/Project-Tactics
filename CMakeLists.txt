@@ -4,7 +4,10 @@ cmake_minimum_required(VERSION 3.27 FATAL_ERROR)
 # Set the project name
 project("ProjectTactics")
 
-# Set C++20 as the standard to be used
+include(CTest)
+enable_testing()
+
+# Set C++23 as the standard to be used
 set(CMAKE_CXX_STANDARD 23)
 # Generate an error if C++23 support is not available
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

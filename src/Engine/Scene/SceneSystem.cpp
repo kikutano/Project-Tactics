@@ -5,6 +5,7 @@
 #include <Libs/Ecs/Component/CameraComponent.h>
 #include <Libs/Ecs/Component/FrustumComponent.h>
 #include <Libs/Ecs/Component/MeshComponent.h>
+#include <Libs/Ecs/Component/NameComponent.h>
 #include <Libs/Ecs/Component/SpriteComponent.h>
 #include <Libs/Ecs/Component/TransformComponent.h>
 #include <Libs/Ecs/Component/ViewportComponent.h>
@@ -25,10 +26,12 @@ SceneSystem::SceneSystem(
 	: _ecs(ecs)
 	, _resourceSystem(resourceSystem) {
 	using namespace component;
-	_ecs.sceneRegistry().on_construct<Mesh>().connect<&SceneSystem::_onMeshConstructed>(this);
-	_ecs.sceneRegistry().on_update<Mesh>().connect<&SceneSystem::_onMeshUpdated>(this);
-	_ecs.sceneRegistry().on_construct<CurrentCamera>().connect<&SceneSystem::_onCurrentCameraConstructed>(this);
-	_ecs.sceneRegistry().on_construct<CurrentViewport>().connect<&SceneSystem::_onCurrentViewportConstructed>(this);
+	auto& registry = _ecs.sceneRegistry();
+	// TODO(Gerark) I believe the following lines should be moved to the respective System classes
+	registry.on_construct<Mesh>().connect<&SceneSystem::_onMeshConstructed>(this);
+	registry.on_update<Mesh>().connect<&SceneSystem::_onMeshUpdated>(this);
+	registry.on_construct<CurrentCamera>().connect<&SceneSystem::_onCurrentCameraConstructed>(this);
+	registry.on_construct<CurrentViewport>().connect<&SceneSystem::_onCurrentViewportConstructed>(this);
 }
 
 SceneSystem::~SceneSystem() {
@@ -114,13 +117,13 @@ void SceneSystem::_updateAlphaBlendFlags(entt::registry& registry, entt::entity 
 }
 
 Entity SceneSystem::createViewport(const glm::vec2& topLeft, const glm::vec2& size, const glm::vec4& clearColor) {
-	auto entity = Entity::create("viewport", &_ecs.sceneRegistry());
+	auto entity = Entity::create("viewport"_id, &_ecs.sceneRegistry());
 	entity.addComponent<component::Viewport>(topLeft, size, clearColor);
 	return entity;
 }
 
 Entity SceneSystem::createCamera(
-	std::string_view name,
+	const HashId& name,
 	const glm::vec3& position,
 	const glm::vec3& direction,
 	const glm::vec3& up,
@@ -141,13 +144,13 @@ Entity SceneSystem::createCamera(
 
 Entity SceneSystem::createEntity(
 	const glm::vec3& position,
-	std::string_view meshName,
-	std::vector<std::string> materials,
+	const HashId& meshName,
+	const std::vector<HashId>& materials,
 	const glm::quat& rotation,
 	const glm::vec3& scale
 ) {
 	using namespace component;
-	auto entity = Entity::create("", &_ecs.sceneRegistry());
+	auto entity = Entity::create(""_id, &_ecs.sceneRegistry());
 	auto& transform = entity.addComponent<Transform>();
 	transform.setPosition(position);
 	transform.setRotation(rotation);
@@ -156,7 +159,7 @@ Entity SceneSystem::createEntity(
 	Mesh meshComp;
 	meshComp.mesh = _resourceSystem.getResource<resource::Mesh>(meshName);
 	for (auto i = 0; i < meshComp.mesh->subMeshes.size(); ++i) {
-		const std::string& materialName = i < materials.size() ? materials[i] : materials.back();
+		auto& materialName = i < materials.size() ? materials[i] : materials.back();
 		auto material = _resourceSystem.getResource<resource::Material>(materialName);
 		meshComp.materials.push_back(resource::Material::createInstance(material));
 	}
@@ -165,12 +168,23 @@ Entity SceneSystem::createEntity(
 }
 
 Entity SceneSystem::createEntity(
-	std::string_view name,
-	std::string_view prefabName
+	const HashId& name,
+	const HashId& prefabName
 ) {
 	auto prefab = _resourceSystem.getResource<resource::Prefab>(prefabName);
-	auto entity = _ecs.createEntityFromPrefab(std::string(name), prefab->entity);
+	auto entity = _ecs.createEntityFromPrefab(name, prefab->entity);
 	return entity;
+}
+
+Entity SceneSystem::getEntityByName(const HashId& name) {
+	auto view = _ecs.sceneRegistry().view<component::Name>();
+	for (auto [entity, nameComp] : view.each()) {
+		if (nameComp.name == name) {
+			return Entity::create(entity, &_ecs.sceneRegistry());
+		}
+	}
+
+	throw TACTICS_EXCEPTION("Entity with name {} not found", name.str());
 }
 
 }

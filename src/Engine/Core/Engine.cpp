@@ -4,6 +4,7 @@
 #include "DefaultFsmExternalController.h"
 #include "ResourceSystemInitializer.h"
 
+#include <Engine/Overlay/EngineCoreOverlay.h>
 #include <Engine/Overlay/FsmOverlay.h>
 #include <Engine/Overlay/RenderingOverlay.h>
 #include <Engine/Overlay/ResourcesOverlay.h>
@@ -26,72 +27,73 @@
 #include <Libs/Resource/IniFile/IniFile.h>
 #include <Libs/Resource/ResourceSystem.h>
 #include <Libs/Resource/Texture/Texture.h>
-#include <Libs/Utility/Service/ServiceLocator.h>
 #include <Libs/Utility/Exception.h>
+#include <Libs/Utility/Log/Log.h>
 #include <Libs/Utility/Math.h>
+#include <Libs/Utility/Service/ServiceLocator.h>
+#include <Libs/Utility/Time/EngineTime.h>
+#include <Libs/Utility/Time/TimeUtility.h>
 
 #include <imgui/imgui.h>
 #include <SDL.h>
-#include <fmt/format.h>
-#include <source_location>
 
 namespace tactics {
 
-void _printCallstack(const std::stacktrace& callstack) {
-	auto currentStackTrace = std::stacktrace::current();
-	std::filesystem::path rootPath((*currentStackTrace.begin()).source_file());
-	// TODO(Gerark) Very hacky to retrieve the src base folder
-	rootPath = rootPath.parent_path().parent_path().parent_path().parent_path();
-	for (auto&& entry : callstack) {
-		std::filesystem::path entryPath(entry.source_file());
-		std::filesystem::path relativePath = entryPath.lexically_relative(rootPath);
-		auto stackEntryStr = fmt::format("---\n.\\{}:{}\n{}\n", relativePath.string(), entry.source_line(), entry.description());
-		printf("%s", stackEntryStr.c_str());
-	}
-}
-
 void Engine::_run(Application& application) {
 	try {
+		Log::init(LogLevel::Trace);
+		LOG_TRACE(Log::Engine, "Engine Initialization Started");
 		auto engine = Engine();
 		engine._initialize(application);
+		LOG_INFO(Log::Engine, "Engine Initialized");
 		engine._internalRun();
+		LOG_TRACE(Log::Engine, "Engine Shutdown Started");
 		engine._shutdown();
+		LOG_TRACE(Log::Engine, "Engine Shutdown Ended");
 	}
 	catch (Exception& exception) {
-		// TODO(Gerark) Add a logger
-		printf("%s\nCallstack:\n", exception.what());
-		_printCallstack(exception.stackTrace());
+		LOG_EXCEPTION(exception);
 	}
 	catch (std::exception& exception) {
-		printf("%s", exception.what());
+		LOG_EXCEPTION(exception);
 	}
 }
 
 void Engine::_initialize(Application& application) {
 	_initializeSDL();
 
+	_timer.setFixedDeltaTime(1.0 / 60.0);
+	EngineTime::setFrameTime(&_timer);
+
+	LOG_TRACE(Log::Engine, "FileSystem Initialization");
 	auto pathHelper = std::make_unique<PathHelper>("data");
 	auto fileLoader = std::make_unique<DefaultFileLoader>(*pathHelper.get());
 	_fileSystem = std::make_unique<FileSystem>(std::move(fileLoader), std::move(pathHelper));
 
+	LOG_TRACE(Log::Engine, "EntityComponentSystem Initialization");
 	_ecs = std::make_unique<EntityComponentSystem>();
 
+	LOG_TRACE(Log::Engine, "ResourceSystem Initialization");
 	_resourceSystem = ResourceSystemInitializer::initialize(*_fileSystem, *_ecs);
 
-	auto devUserConfigFile = _resourceSystem->getResource<resource::IniFile>("devUserConfigFile");
-	auto imguiSettings = _resourceSystem->getResource<resource::IniFile>("imguiSettings");
+	LOG_TRACE(Log::Engine, "OverlaySystem Initialization");
+	auto devUserConfigFile = _resourceSystem->getResource<resource::IniFile>("devUserConfigFile"_id);
+	auto imguiSettings = _resourceSystem->getResource<resource::IniFile>("imguiSettings"_id);
 	_overlaySystem = std::make_unique<OverlaySystem>(devUserConfigFile, *imguiSettings, *_fileSystem);
 	_overlaySystem->setEnabled(true);
 	CustomOverlayColors::initialize(*imguiSettings);
 
-	auto configFile = _resourceSystem->getResource<resource::IniFile>("configFile");
+	LOG_TRACE(Log::Engine, "Load Engine Resources");
+	auto configFile = _resourceSystem->getResource<resource::IniFile>("configFile"_id);
 	_renderSystem = std::make_unique<RenderSystem>(configFile);
-	_resourceSystem->loadPack("builtinMeshes");
-	_resourceSystem->createManualPack("_internalCustomPack");
-	_resourceSystem->loadExternalResource("_internalCustomPack", resource::Texture::createNullTexture());
+	_resourceSystem->loadPack("builtinMeshes"_id);
+	_resourceSystem->createManualPack("_internalCustomPack"_id);
+	_resourceSystem->loadExternalResource("_internalCustomPack"_id, resource::Texture::createNullTexture());
 
+	LOG_TRACE(Log::Engine, "EventSystem Initialization");
 	_eventsSystem = std::make_unique<EventsSystem>();
 
+	LOG_TRACE(Log::Engine, "EventSystem SceneSystem");
 	_sceneSystem = std::make_unique<SceneSystem>(*_ecs, *_resourceSystem);
 
 	_setupServiceLocator();
@@ -99,8 +101,46 @@ void Engine::_initialize(Application& application) {
 	application.setupComponentReflections();
 	_setupFsm(application);
 
-	if (devUserConfigFile->getOrCreate("overlay", "enableEngineOverlay", false)) {
+	_registerOverlays();
+}
+
+void Engine::_internalRun() {
+	_timer.reset(TimeUtility::nowInSeconds());
+	while (!_fsm->hasReachedExitState()) {
+		_timer.update(TimeUtility::nowInSeconds());
+		while (_timer.hasConsumedAllTicks()) {
+			_eventsSystem->update();
+			_fsm->update();
+			_updateCommonComponentSystems();
+			_timer.consumeTick();
+		}
+
+		_renderSystem->render();
+	}
+}
+
+void Engine::_shutdown() {
+	_unregisterOverlays();
+	_eventsSystem->unregisterEventsListener(_fsm.get());
+	_renderSystem.reset();
+	_overlaySystem.reset();
+	_ecs->clearPrefabsRegistry();
+	LOG_TRACE(Log::Engine, "Unload Engine Resources");
+	_resourceSystem->unloadPack("initialization"_id);
+	_resourceSystem->unloadPack("builtinMeshes"_id);
+	_resourceSystem->unloadPack("_internalCustomPack"_id);
+	_throwIfAnyResourceIsStillLoaded();
+	_throwIfAnyImportantLogHappened();
+	SDL_Quit();
+	LOG_TRACE(Log::Engine, "Quit SDL");
+}
+
+void Engine::_registerOverlays() {
+	auto debugConfigFile = _resourceSystem->getResource<resource::IniFile>("devUserConfigFile"_id);
+	if (debugConfigFile->getOrCreate("overlay", "enableEngineOverlay", false)) {
+		LOG_TRACE(Log::Engine, "Register Engine Overlays");
 		_overlaySystem->addOverlay<MainOverlay>("Main", true, *_overlaySystem);
+		_overlaySystem->addOverlay<EngineCoreOverlay>("Engine", false);
 		_overlaySystem->addOverlay<RenderingOverlay>("Rendering", false, *_renderSystem, *_ecs);
 		_overlaySystem->addOverlay<ResourcesOverlay>("Resources", false, *_resourceSystem);
 		_overlaySystem->addOverlay<FsmOverlay>("Fsm", false, *_fsmExternalController, *_fsmInfo);
@@ -108,36 +148,21 @@ void Engine::_initialize(Application& application) {
 	}
 }
 
-void Engine::_internalRun() {
-	while (!_fsm->hasReachedExitState()) {
-		_eventsSystem->update();
-		_fsm->update();
-		_updateCommonComponentSystems();
-		_renderSystem->render();
-	}
-}
-
-void Engine::_shutdown() {
-	auto debugConfigFile = _resourceSystem->getResource<resource::IniFile>("devUserConfigFile");
+void Engine::_unregisterOverlays() {
+	auto debugConfigFile = _resourceSystem->getResource<resource::IniFile>("devUserConfigFile"_id);
 	if (debugConfigFile->getOrCreate("overlay", "enableEngineOverlay", false)) {
-		_overlaySystem->removeOverlay("Main");
-		_overlaySystem->removeOverlay("Rendering");
+		LOG_TRACE(Log::Engine, "Unregister Engine Overlays");
 		_overlaySystem->removeOverlay("ImGui Demo");
+		_overlaySystem->removeOverlay("Fsm");
+		_overlaySystem->removeOverlay("Resources");
+		_overlaySystem->removeOverlay("Rendering");
+		_overlaySystem->removeOverlay("Engine");
+		_overlaySystem->removeOverlay("Main");
 	}
-	debugConfigFile.reset();
-
-	_eventsSystem->unregisterEventsListener(_fsm.get());
-	_renderSystem.reset();
-	_overlaySystem.reset();
-	_ecs->clearPrefabsRegistry();
-	_resourceSystem->unloadPack("initialization");
-	_resourceSystem->unloadPack("builtinMeshes");
-	_resourceSystem->unloadPack("_internalCustomPack");
-	_throwIfAnyResourceIsStillLoaded();
-	SDL_Quit();
 }
 
 void Engine::_throwIfAnyResourceIsStillLoaded() {
+	LOG_TRACE(Log::Engine, "Check if any resource is still loaded");
 	_resourceSystem->forEachManager([] (auto& manager) {
 		manager.forEachResource([] (const auto& resource) {
 			throw TACTICS_EXCEPTION(
@@ -149,16 +174,26 @@ void Engine::_throwIfAnyResourceIsStillLoaded() {
 	});
 }
 
-void Engine::_initializeSDL() {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		throw TACTICS_EXCEPTION("SDL could not initialize! SDL_Error: {}\n", SDL_GetError());
+void Engine::_throwIfAnyImportantLogHappened() {
+	if (Log::hasBeenLoggedOverLevel(LogLevel::Warning)) {
+		throw TACTICS_EXCEPTION("Do not ignore logs over warning level.\nRecap:\n{}",
+			Log::getLogCountRecapMessage());
 	}
 }
 
+void Engine::_initializeSDL() {
+	LOG_TRACE(Log::Engine, "SDL Initialization Started");
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		throw TACTICS_EXCEPTION("SDL could not initialize! SDL_Error: {}\n", SDL_GetError());
+	}
+	LOG_TRACE(Log::Engine, "SDL Initialization Ended");
+}
+
 void Engine::_setupFsm(Application& application) {
+	LOG_TRACE(Log::Engine, "Building Game FSM");
 	auto builder = FsmBuilder();
 	auto fsmStartingStateName = application.initialize(*_serviceLocator, builder);
-	if (fsmStartingStateName.empty()) {
+	if (fsmStartingStateName.isEmpty()) {
 		throw TACTICS_EXCEPTION("Application did not return a valid name for the starting state for the FSM. The name is empty");
 	}
 
@@ -176,8 +211,6 @@ void Engine::_setupServiceLocator() {
 	_serviceLocator->addService(_ecs.get());
 	_serviceLocator->addService(_sceneSystem.get());
 	_serviceLocator->addService(_fileSystem.get());
-
-	_ecs->sceneRegistry().ctx().emplace<ServiceLocator*>(_serviceLocator.get());
 }
 
 void Engine::_updateCommonComponentSystems() {
@@ -186,6 +219,7 @@ void Engine::_updateCommonComponentSystems() {
 	auto& registry = _ecs->sceneRegistry();
 
 	SpriteAnimationSystem::update(registry.view<Sprite, SpriteAnimation>());
+	SpriteSystem::update(registry.view<Sprite, Mesh>());
 
 	CameraSystem::updateCameraAspectRatios(
 		registry.view<Viewport, CurrentViewport>(),

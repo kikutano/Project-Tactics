@@ -21,7 +21,7 @@ void ResourceOverlayHelper::drawResource(const resource::ResourceInfo& resourceI
 
 	ImGui::PushStyleColor(ImGuiCol_TabActive, toColor(resourceType, 0.4f));
 	ImGui::PushStyleColor(ImGuiCol_TabUnfocusedActive, toColor(resourceType, 0.4f));
-	ImGui::BeginTabBar(resourceInfo.getName().c_str());
+	ImGui::BeginTabBar(resourceInfo.getName().str());
 	ImGui::PopStyleColor(2);
 
 	if (resourceInfo.isLoaded()) {
@@ -109,7 +109,7 @@ void ResourceOverlayHelper::drawResource(const resource::Material& material) {
 	auto color = toColor(ResourceType::Material);
 	ImGui::TextColored(color, "Shader:");
 	ImGui::SameLine();
-	ImGui::Text("%s", material.shader->name.c_str());
+	ImGui::Text("%s", material.shader->name.str());
 	for (auto&& [key, value] : material.getInts()) {
 		ImGui::TextColored(color, "%s", key.c_str());
 		ImGui::SameLine();
@@ -138,7 +138,7 @@ void ResourceOverlayHelper::drawResource(const resource::Material& material) {
 	for (auto&& [key, value] : material.getTextures()) {
 		ImGui::TextColored(color, "%s", key.c_str());
 		ImGui::SameLine();
-		ImGui::Text("%s", value->name.c_str());
+		ImGui::Text("%s", value->name.str());
 	}
 	for (auto&& [key, value] : material.getMatrices()) {
 		ImGui::TextColored(color, "%s", key.c_str());
@@ -170,15 +170,12 @@ void ResourceOverlayHelper::drawResource(const resource::SpriteSheet& spriteShee
 
 	auto uvSpriteSize = spriteSheet.getUVSpriteSize();
 	for (auto i = 0u; i < spriteCount; i++) {
-		auto uvCoordinates = spriteSheet.getUVCoordinates(i);
-		auto uvSize = spriteSheet.getUVSpriteSize();
 		auto imageButtonId = "Sprite" + std::to_string(i);
 		if (_drawSpriteButton(
 			imageButtonId.c_str(),
 			toImGuiTexture(*spriteSheet.texture),
 			toImVec2(spriteSheet.spriteSize),
-			toImVec2(uvCoordinates),
-			toImVec2(uvSize),
+			spriteSheet.getUVRect(i),
 			i < spriteCount - 1,
 			i)) {
 			_selectedSpriteForSpriteViewer = i;
@@ -189,14 +186,14 @@ void ResourceOverlayHelper::drawResource(const resource::SpriteSheet& spriteShee
 	_drawSpriteViewer(spriteSheet);
 }
 
-bool ResourceOverlayHelper::_drawSpriteButton(const char* id, void* texture, const ImVec2& buttonSize, const ImVec2& uv, const ImVec2& uvSize, bool isLast, unsigned int index) {
+bool ResourceOverlayHelper::_drawSpriteButton(const char* id, void* texture, const ImVec2& buttonSize, const Rect& uvRect, bool isLast, unsigned int index) {
 	auto overlayPosition = ImGui::GetCursorPos();
 	overlayPosition.x += 2;
 	overlayPosition.y += 1;
 	bool pressed = ImGui::ImageButton(id, texture,
 		ImVec2(buttonSize.x, buttonSize.y),
-		ImVec2(uv.x, uv.y + uvSize.y),
-		ImVec2(uv.x + uvSize.x, uv.y));
+		ImVec2(uvRect.bounds.min.x, uvRect.bounds.min.y),
+		ImVec2(uvRect.bounds.max.x, uvRect.bounds.max.y));
 
 	if (isLast) {
 		ImGui::SameLine();
@@ -225,13 +222,12 @@ void ResourceOverlayHelper::_drawSpriteViewer(const resource::SpriteSheet& sprit
 		auto ratio = spriteSize.y / width;
 		auto previewWidth = std::min(width, 512.f);
 		ImGui::Text("Sprite [%d]", _selectedSpriteForSpriteViewer);
-		auto uv = spriteSheet.getUVCoordinates(_selectedSpriteForSpriteViewer);
-		auto uvSpriteSize = spriteSheet.getUVSpriteSize();
+		auto uvRect = spriteSheet.getUVRect(_selectedSpriteForSpriteViewer);
 		ImGui::Image(
 			toImGuiTexture(*spriteSheet.texture),
 			{previewWidth, previewWidth * ratio},
-			ImVec2(uv.x, uv.y + uvSpriteSize.y),
-			ImVec2(uv.x + uvSpriteSize.x, uv.y),
+			toImVec2(uvRect.bounds.min),
+			toImVec2(uvRect.bounds.max),
 			{1, 1, 1, 1}
 		);
 

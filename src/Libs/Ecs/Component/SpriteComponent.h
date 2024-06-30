@@ -11,8 +11,6 @@ namespace tactics::component {
 
 struct Sprite {
 	std::shared_ptr<resource::SpriteSheet> spriteSheet;
-	std::shared_ptr<resource::Mesh> mesh;
-	std::shared_ptr<resource::Material::Instance> material;
 	unsigned int spriteIndex;
 	glm::vec2 uvFlip = Vector2::one;
 
@@ -21,11 +19,12 @@ struct Sprite {
 };
 
 struct SpriteAnimation {
-	float duration;
-	int i{};
-	std::vector<unsigned int> spriteIndices;
+	float currentTime = 0.0f;
+	HashId currentAnimation = HashId::none;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(SpriteAnimation, duration, spriteIndices);
+	void startAnimation(const HashId& animation);
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(SpriteAnimation, currentTime, currentAnimation);
 	static void defineReflection();
 };
 
