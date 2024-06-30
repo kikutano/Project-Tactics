@@ -1,0 +1,41 @@
+{
+    "pongDemo": {
+        "texture": {
+            "spritePlayer": {
+                "path": "_demoPong/Player.png",
+                "filter": "nearest"
+            },
+            "spriteBall": {
+                "path": "_demoPong/Ball.png",
+                "filter": "nearest"
+            }
+        },
+        "spriteSheet": {
+            "player00": {
+                "texture": "spritePlayer",
+                "spriteSize": {
+                    "x": 17,
+                    "y": 120
+                }
+            },
+            "ball00": {
+                "texture": "spriteBall",
+                "spriteSize": {
+                    "x": 30,
+                    "y": 30
+                }
+            }
+        },
+        "prefab": {
+            "player": {
+                "path": "_demoPong/player.prefab"
+            },
+            "ball": {
+                "path": "_demoPong/ball.prefab"
+            },
+            "spriteCamera": {
+                "path": "_demoPong/spriteCamera.prefab"
+            }
+        }
+    }
+}

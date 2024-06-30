@@ -11,6 +11,7 @@
 #include "States/DemoMapState.h"
 #include "States/DemoSpriteState.h"
 #include "States/UnloadState.h"
+#include "States/PongDemoState.h"
 
 #include <Libs/Utility/Reflection.h>
 #include <Libs/Resource/ResourceSystem.h>
@@ -27,13 +28,34 @@ std::string OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, F
 	auto configFile = serviceLocator.getService<resource::ResourceSystem>().getResource<resource::IniFile>("devUserConfigFile");
 	auto state = configFile->getOrCreate("demo", "fsm", std::string("map"));
 
-	if (state == "sprite") {
+	return _initializePongDemo(serviceLocator, fsmBuilder);
+
+	/*if (state == "pong") {
+		return _initializePongDemo(serviceLocator, fsmBuilder);
+	} else if (state == "sprite") {
 		return _initializeSpriteDemo(serviceLocator, fsmBuilder);
 	} else if (state == "map") {
 		return _initializeMapDemo(serviceLocator, fsmBuilder);
 	} else {
 		return _initializeSimpleDemo(serviceLocator, fsmBuilder);
-	}
+	}*/
+}
+
+std::string OpenTacticaApplication::_initializePongDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
+	fsmBuilder
+		.state<LoadState>("Load", serviceLocator, "_demoPong/resources.json", "pongDemo", "spriteCamera")
+		.on("proceed").jumpTo("Sprites")
+		.onAppExitRequest().jumpTo("Unload")
+
+		.state<PongDemoState>("Sprites", serviceLocator)
+		.on("exit").jumpTo("Unload")
+		.onAppExitRequest().jumpTo("Unload")
+
+		.state<UnloadState>("Unload", serviceLocator, "pongDemo")
+		.on("proceed").exitFsm()
+		.onAppExitRequest().exitFsm();
+
+	return "Load";
 }
 
 std::string OpenTacticaApplication::_initializeSpriteDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
