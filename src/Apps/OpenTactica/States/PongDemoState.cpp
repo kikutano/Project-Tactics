@@ -15,9 +15,9 @@ namespace tactics {
 FsmAction PongDemoState::enter() {
 	auto& sceneSystem = getService<SceneSystem>();
 
-	_stickLeft = sceneSystem.createEntity("stickLeft", "player");
-	_stickRight = sceneSystem.createEntity("stickRight", "player");
-	_ball = sceneSystem.createEntity("ball", "ball");
+	_stickLeft = sceneSystem.createEntity("stickLeft"_id, "player"_id);
+	_stickRight = sceneSystem.createEntity("stickRight"_id, "player"_id);
+	_ball = sceneSystem.createEntity("ball"_id, "ball"_id);
 
 	auto& stickLeftTransform = _stickLeft.getComponent<component::Transform>();
 	auto& stickRightTransform = _stickRight.getComponent<component::Transform>();

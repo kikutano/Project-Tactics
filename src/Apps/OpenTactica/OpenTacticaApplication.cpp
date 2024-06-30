@@ -4,6 +4,7 @@
 #include "Component/CharacterFacing.h"
 #include "Component/RotateItem.h"
 #include "Component/RotateAroundPoint.h"
+#include "Component//TranslateItem.h"
 
 #include "States/DemoSimpleState.h"
 #include "States/EmptyState.h"
@@ -21,7 +22,7 @@ namespace tactics {
 
 void OpenTacticaApplication::setupComponentReflections() {
 	using namespace component;
-	defineComponentsReflection<BattleCamera, CharacterFacing, RotateItem, RotateAroundPoint>();
+	defineComponentsReflection<BattleCamera, CharacterFacing, RotateItem, RotateAroundPoint, TranslateItem>();
 }
 
 HashId OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
