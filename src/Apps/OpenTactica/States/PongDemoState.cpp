@@ -28,6 +28,7 @@ FsmAction PongDemoState::enter() {
 	ballTransform.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	_stickLeft.getComponent<component::TranslateItem>().axis = Vector3::up;
+	_stickLeft.getComponent<component::TranslateItem>().speed = 5.0f;
 
 	return FsmAction::none();
 }
@@ -47,7 +48,12 @@ FsmAction PongDemoState::update() {
 FsmEventAction PongDemoState::onKeyPress(SDL_KeyboardEvent& event) {
 	if (event.keysym.sym == SDLK_ESCAPE) {
 		return FsmEventAction::transition("exit"_id);
+	} else if (event.keysym.sym == SDLK_DOWN) {
+		_stickLeft.getComponent<component::TranslateItem>().axis = Vector3::down;
+	} else if (event.keysym.sym == SDLK_UP) {
+		_stickLeft.getComponent<component::TranslateItem>().axis = Vector3::up;
 	}
+
 	return FsmEventAction::none();
 }
 
