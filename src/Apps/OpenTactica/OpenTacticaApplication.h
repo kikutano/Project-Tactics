@@ -4,7 +4,7 @@
 
 namespace tactics {
 
-class OpenTacticaApplication: public tactics::Application {
+class OpenTacticaApplication : public tactics::Application {
 public:
 	void setupComponentReflections() override;
 	HashId initialize(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) override;
@@ -16,5 +16,5 @@ private:
 	HashId _initializePongDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder);
 };
 
-}
+} // namespace tactics
 
