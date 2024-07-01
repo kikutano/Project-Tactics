@@ -43,10 +43,10 @@ HashId OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBui
 HashId OpenTacticaApplication::_initializePongDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
 	fsmBuilder
 		.state<LoadState>("Load", serviceLocator, "_demoPong/resources.json", "pongDemo"_id, "spriteCamera"_id)
-		.on("proceed").jumpTo("Sprites")
+		.on("proceed").jumpTo("Pong")
 		.onAppExitRequest().jumpTo("Unload")
 
-		.state<PongDemoState>("Sprites", serviceLocator)
+		.state<PongDemoState>("Pong", serviceLocator)
 		.on("exit").jumpTo("Unload")
 		.onAppExitRequest().jumpTo("Unload")
 
