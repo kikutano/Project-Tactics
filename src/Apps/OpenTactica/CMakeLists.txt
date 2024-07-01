@@ -10,10 +10,12 @@ set(SOURCES
     States/EmptyState.cpp
     States/LoadState.cpp
     States/UnloadState.cpp
+    States/PongDemoState.cpp
     Component/BattleCamera.cpp
     Component/CharacterFacing.cpp
     Component/RotateAroundPoint.cpp
-    Component/RotateItem.cpp)
+    Component/RotateItem.cpp
+    Component/TranslateItem.cpp)
     
 set(HEADERS
     OpenTacticaApplication.h
@@ -23,10 +25,12 @@ set(HEADERS
     States/EmptyState.h
     States/LoadState.h
     States/UnloadState.h
+    States/PongDemoState.h
     Component/BattleCamera.h
     Component/CharacterFacing.h
     Component/RotateAroundPoint.h
-    Component/RotateItem.h)
+    Component/RotateItem.h
+    Component/TranslateItem.h)
 
 set(TARGET_NAME OpenTactica)
 add_executable(${TARGET_NAME} ${SOURCES} ${HEADERS})

@@ -29,15 +29,15 @@ HashId OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBui
 	auto configFile = serviceLocator.getService<resource::ResourceSystem>().getResource<resource::IniFile>("devUserConfigFile"_id);
 	auto state = configFile->getOrCreate("demo", "fsm", std::string("map"));
 
-	return _initializePongDemo(serviceLocator, fsmBuilder);
-
-	/*if (state == "sprite") {
+	if (state == "pong") {
+		return _initializePongDemo(serviceLocator, fsmBuilder);
+	} else if (state == "sprite") {
 		return _initializeSpriteDemo(serviceLocator, fsmBuilder);
 	} else if (state == "map") {
 		return _initializeMapDemo(serviceLocator, fsmBuilder);
 	} else {
 		return _initializeSimpleDemo(serviceLocator, fsmBuilder);
-	}*/
+	}
 }
 
 HashId OpenTacticaApplication::_initializePongDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
