@@ -4,8 +4,8 @@ namespace tactics::component {
 
 void TranslateItem::defineReflection() {
 	componentReflection<TranslateItem>("translateItem")
-		.data<&TranslateItem::speed>(hash("speed"))
-		.data<&TranslateItem::axis>(hash("axis"));
+		.data<&TranslateItem::speed>("speed"_id)
+		.data<&TranslateItem::axis>("axis"_id);
 }
 
 void TranslateItemSystem::update(const ecs_view<Transform, TranslateItem>& view) {

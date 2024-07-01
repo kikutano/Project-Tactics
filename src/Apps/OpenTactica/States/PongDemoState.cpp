@@ -46,7 +46,7 @@ FsmAction PongDemoState::update() {
 
 FsmEventAction PongDemoState::onKeyPress(SDL_KeyboardEvent& event) {
 	if (event.keysym.sym == SDLK_ESCAPE) {
-		return FsmEventAction::transition("exit");
+		return FsmEventAction::transition("exit"_id);
 	}
 	return FsmEventAction::none();
 }

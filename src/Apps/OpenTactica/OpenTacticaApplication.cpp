@@ -31,9 +31,7 @@ HashId OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBui
 
 	return _initializePongDemo(serviceLocator, fsmBuilder);
 
-	/*if (state == "pong") {
-		return _initializePongDemo(serviceLocator, fsmBuilder);
-	} else if (state == "sprite") {
+	/*if (state == "sprite") {
 		return _initializeSpriteDemo(serviceLocator, fsmBuilder);
 	} else if (state == "map") {
 		return _initializeMapDemo(serviceLocator, fsmBuilder);
@@ -42,7 +40,7 @@ HashId OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBui
 	}*/
 }
 
-std::string OpenTacticaApplication::_initializePongDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
+HashId OpenTacticaApplication::_initializePongDemo(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
 	fsmBuilder
 		.state<LoadState>("Load", serviceLocator, "_demoPong/resources.json", "pongDemo"_id, "spriteCamera"_id)
 		.on("proceed").jumpTo("Sprites")
@@ -113,5 +111,6 @@ HashId OpenTacticaApplication::_initializeSimpleDemo(ServiceLocator& serviceLoca
 
 	return "Load"_id;
 }
+
 
 }
