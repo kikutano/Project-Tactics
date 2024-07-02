@@ -14,8 +14,9 @@ public:
 
 private:
 	FsmEventAction onKeyPress(SDL_KeyboardEvent& event) override;
-	Entity _stickLeft;
-	Entity _stickRight;
+	FsmEventAction onKeyRelease(SDL_KeyboardEvent& event) override;
+	Entity _playerLeft;
+	Entity _playerRight;
 	Entity _ball;
 };
 }
