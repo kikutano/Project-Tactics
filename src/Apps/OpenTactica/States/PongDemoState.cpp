@@ -6,6 +6,7 @@
 
 #include <Libs/Ecs/Component/TransformComponent.h>
 #include <Libs/Ecs/EntityComponentSystem.h>
+#include <Libs/Utility/Log/Log.h>
 
 namespace tactics {
 
@@ -39,6 +40,18 @@ FsmAction PongDemoState::update() {
 	auto& ecs = getService<EntityComponentSystem>();
 	component::TranslateItemSystem::update(ecs.sceneRegistry().view<component::Transform, component::TranslateItem>());
 
+	if (_ball.getComponent<component::Transform>().getPosition().y > 2.5f) {
+		_ball.getComponent<component::TranslateItem>().axis.y *= -1.0f;
+	} else if (_ball.getComponent<component::Transform>().getPosition().y < -2.5f) {
+		_ball.getComponent<component::TranslateItem>().axis.y *= -1.0f;
+	}
+
+	if (_ball.getComponent<component::Transform>().getPosition().x > 5.0f) {
+		_ball.getComponent<component::TranslateItem>().axis.x *= -1.0f;
+	} else if (_ball.getComponent<component::Transform>().getPosition().x < -5.0f) {
+		_ball.getComponent<component::TranslateItem>().axis.x *= -1.0f;
+	} 
+
 	return FsmAction::none();
 }
 
@@ -46,11 +59,17 @@ FsmEventAction PongDemoState::onKeyPress(SDL_KeyboardEvent& event) {
 	if (event.keysym.sym == SDLK_ESCAPE) {
 		return FsmEventAction::transition("exit"_id);
 	} else if (event.keysym.sym == SDLK_DOWN) {
-		_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::down;
+		if (_playerLeft.getComponent<component::Transform>().getPosition().y > -2.1f) {
+			_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::down;
+		} else {
+			_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::zero;
+		}
 	} else if (event.keysym.sym == SDLK_UP) {
-		_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::up;
-	} else {
-		_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::zero;
+		if (_playerLeft.getComponent<component::Transform>().getPosition().y < 2.1f) {
+			_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::up;
+		} else {
+			_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::zero;
+		}
 	}
 
 	return FsmEventAction::none();

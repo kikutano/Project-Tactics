@@ -11,6 +11,14 @@
             "z": 0.2
         }
     },
+    "translateItem": {
+        "axis": {
+            "x": 1,
+            "y": -1,
+            "z": 0
+        },
+        "speed": 2.0
+    },
     "mesh": {
         "mesh": "quad",
         "materials": [
@@ -22,6 +30,5 @@
     "sprite": {
         "spriteSheet": "ball00",
         "spriteIndex": 0
-    },
-    "spriteAnimation": {}
+    }
 }
