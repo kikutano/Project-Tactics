@@ -40,6 +40,7 @@ FsmAction PongDemoState::update() {
 	auto& ecs = getService<EntityComponentSystem>();
 	component::TranslateItemSystem::update(ecs.sceneRegistry().view<component::Transform, component::TranslateItem>());
 
+	// wall bouncing
 	if (_ball.getComponent<component::Transform>().getPosition().y > 2.5f) {
 		_ball.getComponent<component::TranslateItem>().axis.y *= -1.0f;
 	} else if (_ball.getComponent<component::Transform>().getPosition().y < -2.5f) {
@@ -50,7 +51,35 @@ FsmAction PongDemoState::update() {
 		_ball.getComponent<component::TranslateItem>().axis.x *= -1.0f;
 	} else if (_ball.getComponent<component::Transform>().getPosition().x < -5.0f) {
 		_ball.getComponent<component::TranslateItem>().axis.x *= -1.0f;
-	} 
+	}
+
+	// player bouncing
+	auto ballYPos = _ball.getComponent<component::Transform>().getPosition().y;
+	auto ballXPos = _ball.getComponent<component::Transform>().getPosition().x;
+
+	auto leftStickCollUpRightXPos = _playerLeft.getComponent<component::Transform>().getPosition().x + 0.1f;
+	auto leftStickCollUpRightYPos = _playerLeft.getComponent<component::Transform>().getPosition().y + 0.3f;
+
+	auto leftStickCollUpLeftXPos = _ball.getComponent<component::Transform>().getPosition().x - 1.0f;
+	// auto leftStickCollUpLeftYPos = _ball.getComponent<component::Transform>().getPosition().y + 1.0f;
+
+	// auto leftStickCollDownRightXPos = _ball.getComponent<component::Transform>().getPosition().x + 1.0f;
+	auto leftStickCollDownRightYPos = _playerLeft.getComponent<component::Transform>().getPosition().y - 0.3f;
+
+	// auto leftStickCollDownLeftXPos = _ball.getComponent<component::Transform>().getPosition().x - 1.0f;
+	// auto leftStickCollDownLeftYPos = _ball.getComponent<component::Transform>().getPosition().y - 1.0f;
+
+	if (ballYPos < leftStickCollUpRightYPos && ballYPos > leftStickCollDownRightYPos) {
+		auto ballXDir = _ball.getComponent<component::TranslateItem>().axis.x;
+
+		if (ballXDir < 0) {
+			if (ballXPos < leftStickCollUpRightXPos) { _ball.getComponent<component::TranslateItem>().axis.x *= -1.0f; }
+		} else {
+			if (ballXPos < leftStickCollUpRightXPos && ballXPos > leftStickCollUpLeftXPos) {
+				_ball.getComponent<component::TranslateItem>().axis.x *= -1.0f;
+			}
+		}
+	}
 
 	return FsmAction::none();
 }
