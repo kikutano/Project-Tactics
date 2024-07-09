@@ -8,6 +8,9 @@
             "spriteBall": {
                 "path": "_demoPong/Ball.png",
                 "filter": "nearest"
+            },
+            "crate": {
+                "path": "_demoSimple/crate.jpg"
             }
         },
         "spriteSheet": {

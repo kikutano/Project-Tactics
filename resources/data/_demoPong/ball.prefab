@@ -17,7 +17,7 @@
             "y": -1,
             "z": 0
         },
-        "speed": 2.0
+        "speed": 4.0
     },
     "mesh": {
         "mesh": "quad",
