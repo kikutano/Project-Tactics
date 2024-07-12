@@ -9,6 +9,8 @@ class PongDemoState : public FsmStateWithServices {
 public:
 	using FsmStateWithServices::FsmStateWithServices;
 	FsmAction update() override;
+	void _updateBallCollisionWithWall();
+	void _updateBallCollisionWithPlayer();
 	FsmAction enter() override;
 	void exit() override;
 
