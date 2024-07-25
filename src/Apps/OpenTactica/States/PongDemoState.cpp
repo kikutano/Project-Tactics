@@ -1,5 +1,6 @@
 #include "PongDemoState.h"
 
+#include "../Component/PlayerMovement.h"
 #include "../Component/TranslateItem.h"
 
 #include <Engine/Scene/SceneSystem.h>
@@ -23,19 +24,16 @@ FsmAction PongDemoState::enter() {
 	_playerLeft = sceneSystem.createEntity("playerLeft"_id, "player"_id);
 	_playerRight = sceneSystem.createEntity("playerRight"_id, "player"_id);
 	_ball = sceneSystem.createEntity("ball"_id, "ball"_id);
+	_scoreLeft = sceneSystem.createEntity("scoreLeft"_id, "numbers"_id);
 
 	auto& playerLeftTransform = _playerLeft.getComponent<component::Transform>();
 	auto& playerRightTransform = _playerRight.getComponent<component::Transform>();
-	auto& ballTransform = _ball.getComponent<component::Transform>();
 
 	playerLeftTransform.setPosition(glm::vec3(-4.0f, 0.0f, 0.0f));
 	playerRightTransform.setPosition(glm::vec3(4.0f, 0.0f, 0.0f));
-	ballTransform.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
-	_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::zero;
-	_playerLeft.getComponent<component::TranslateItem>().speed = 4.0f;
-	_playerRight.getComponent<component::TranslateItem>().axis = Vector3::zero;
-	_playerRight.getComponent<component::TranslateItem>().speed = 4.0f;
+	_playerLeft.getComponent<component::PlayerMovement>().keyCodeDown = SDLK_s;
+	_playerLeft.getComponent<component::PlayerMovement>().keyCodeUp = SDLK_w;
 
 	// auto& resourceSystem = getService<resource::ResourceSystem>();
 
@@ -119,45 +117,19 @@ void PongDemoState::_updateBallCollisionWithPlayer() {
 FsmEventAction PongDemoState::onKeyPress(SDL_KeyboardEvent& event) {
 	if (event.keysym.sym == SDLK_ESCAPE) { return FsmEventAction::transition("exit"_id); }
 
-	if (event.keysym.sym == SDLK_s) {
-		if (_playerLeft.getComponent<component::Transform>().getPosition().y > -2.1f) {
-			_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::down;
-		} else {
-			_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::zero;
-		}
-	} else if (event.keysym.sym == SDLK_w) {
-		if (_playerLeft.getComponent<component::Transform>().getPosition().y < 2.1f) {
-			_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::up;
-		} else {
-			_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::zero;
-		}
-	}
-
-	if (event.keysym.sym == SDLK_l) {
-		if (_playerRight.getComponent<component::Transform>().getPosition().y > -2.1f) {
-			_playerRight.getComponent<component::TranslateItem>().axis = Vector3::down;
-		} else {
-			_playerRight.getComponent<component::TranslateItem>().axis = Vector3::zero;
-		}
-	} else if (event.keysym.sym == SDLK_o) {
-		if (_playerRight.getComponent<component::Transform>().getPosition().y < 2.1f) {
-			_playerRight.getComponent<component::TranslateItem>().axis = Vector3::up;
-		} else {
-			_playerRight.getComponent<component::TranslateItem>().axis = Vector3::zero;
-		}
-	}
+	auto& ecs = getService<EntityComponentSystem>();
+	component::PlayerMovementSystem::onKeyPress(
+		event,
+		ecs.sceneRegistry().view<component::Transform, component::TranslateItem, component::PlayerMovement>());
 
 	return FsmEventAction::none();
 }
 
 FsmEventAction PongDemoState::onKeyRelease(SDL_KeyboardEvent& event) {
-	if (event.keysym.sym == SDLK_s || event.keysym.sym == SDLK_w) {
-		_playerLeft.getComponent<component::TranslateItem>().axis = Vector3::zero;
-	}
-
-	if (event.keysym.sym == SDLK_l || event.keysym.sym == SDLK_o) {
-		_playerRight.getComponent<component::TranslateItem>().axis = Vector3::zero;
-	}
+	auto& ecs = getService<EntityComponentSystem>();
+	component::PlayerMovementSystem::onKeyRelease(
+		event,
+		ecs.sceneRegistry().view<component::Transform, component::TranslateItem, component::PlayerMovement>());
 
 	return FsmEventAction::none();
 }

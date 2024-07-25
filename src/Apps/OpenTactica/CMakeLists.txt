@@ -13,6 +13,7 @@ set(SOURCES
     States/PongDemoState.cpp
     Component/BattleCamera.cpp
     Component/CharacterFacing.cpp
+    Component/PlayerMovement.cpp
     Component/RotateAroundPoint.cpp
     Component/RotateItem.cpp
     Component/TranslateItem.cpp)
@@ -28,6 +29,7 @@ set(HEADERS
     States/PongDemoState.h
     Component/BattleCamera.h
     Component/CharacterFacing.h
+    Component/PlayerMovement.h
     Component/RotateAroundPoint.h
     Component/RotateItem.h
     Component/TranslateItem.h)

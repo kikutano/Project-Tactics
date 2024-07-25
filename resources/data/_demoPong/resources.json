@@ -9,6 +9,10 @@
                 "path": "_demoPong/Ball.png",
                 "filter": "nearest"
             },
+            "spriteNumbers": {
+                "path": "_demoPong/numbers.png",
+                "filter": "nearest"
+            },
             "crate": {
                 "path": "_demoSimple/crate.jpg"
             }
@@ -27,6 +31,13 @@
                     "x": 30,
                     "y": 30
                 }
+            },
+            "numbers00": {
+                "texture": "spriteNumbers",
+                "spriteSize": {
+                    "x": 30,
+                    "y": 30
+                }
             }
         },
         "prefab": {
@@ -35,6 +46,9 @@
             },
             "ball": {
                 "path": "_demoPong/ball.prefab"
+            },
+            "numbers": {
+                "path":  "_demoPong/numbers.prefab"
             },
             "spriteCamera": {
                 "path": "_demoPong/spriteCamera.prefab"

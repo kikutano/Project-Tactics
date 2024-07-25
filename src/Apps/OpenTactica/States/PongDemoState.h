@@ -20,5 +20,6 @@ private:
 	Entity _playerLeft;
 	Entity _playerRight;
 	Entity _ball;
+	Entity _scoreLeft;
 };
 }
