@@ -19,6 +19,9 @@
         },
         "speed": 2.0
     },
+    "ballMovement": {
+        
+    },
     "mesh": {
         "mesh": "quad",
         "materials": [

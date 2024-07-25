@@ -1,5 +1,6 @@
 #include "OpenTacticaApplication.h"
 
+#include "Component/BallMovement.h"
 #include "Component/BattleCamera.h"
 #include "Component/CharacterFacing.h"
 #include "Component/PlayerMovement.h"
@@ -27,7 +28,8 @@ void OpenTacticaApplication::setupComponentReflections() {
 							   RotateItem,
 							   RotateAroundPoint,
 							   TranslateItem,
-							   PlayerMovement>();
+							   PlayerMovement,
+							   BallMovement>();
 }
 
 HashId OpenTacticaApplication::initialize(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {

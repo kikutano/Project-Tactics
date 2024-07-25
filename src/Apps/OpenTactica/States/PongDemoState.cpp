@@ -1,5 +1,6 @@
 #include "PongDemoState.h"
 
+#include "../Component/BallMovement.h"
 #include "../Component/PlayerMovement.h"
 #include "../Component/TranslateItem.h"
 
@@ -58,6 +59,9 @@ FsmAction PongDemoState::update() {
 	auto& ecs = getService<EntityComponentSystem>();
 	component::TranslateItemSystem::update(ecs.sceneRegistry().view<component::Transform, component::TranslateItem>());
 
+	component::BallMovementSystem::update(
+		ecs.sceneRegistry().view<component::Transform, component::TranslateItem, component::BallMovement>());
+
 	// wall bouncing
 	_updateBallCollisionWithWall();
 	_updateBallCollisionWithPlayer();
@@ -66,7 +70,7 @@ FsmAction PongDemoState::update() {
 }
 
 void PongDemoState::_updateBallCollisionWithWall() {
-	if (_ball.getComponent<component::Transform>().getPosition().y > 2.5f) {
+	/*if (_ball.getComponent<component::Transform>().getPosition().y > 2.5f) {
 		_ball.getComponent<component::TranslateItem>().axis.y *= -1.0f;
 	} else if (_ball.getComponent<component::Transform>().getPosition().y < -2.5f) {
 		_ball.getComponent<component::TranslateItem>().axis.y *= -1.0f;
@@ -79,39 +83,39 @@ void PongDemoState::_updateBallCollisionWithWall() {
 	} else if (_ball.getComponent<component::Transform>().getPosition().x < -5.0f) {
 		_ball.getComponent<component::TranslateItem>().axis.x *= -1.0f;
 		_ball.getComponent<component::Transform>().setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	}
+	}*/
 }
 
 void PongDemoState::_updateBallCollisionWithPlayer() {
-	auto ballYPos = _ball.getComponent<component::Transform>().getPosition().y;
-	auto ballXPos = _ball.getComponent<component::Transform>().getPosition().x;
-	auto ballDir = _ball.getComponent<component::TranslateItem>().axis;
+	//auto ballYPos = _ball.getComponent<component::Transform>().getPosition().y;
+	//auto ballXPos = _ball.getComponent<component::Transform>().getPosition().x;
+	//auto ballDir = _ball.getComponent<component::TranslateItem>().axis;
 
-	// left player bouncing
-	auto leftStickCollUpRightXPos = _playerLeft.getComponent<component::Transform>().getPosition().x + 0.2f;
-	auto leftStickCollUpRightYPos = _playerLeft.getComponent<component::Transform>().getPosition().y + 0.5f;
-	auto leftStickCollDownRightYPos = _playerLeft.getComponent<component::Transform>().getPosition().y - 0.5f;
+	//// left player bouncing
+	//auto leftStickCollUpRightXPos = _playerLeft.getComponent<component::Transform>().getPosition().x + 0.2f;
+	//auto leftStickCollUpRightYPos = _playerLeft.getComponent<component::Transform>().getPosition().y + 0.5f;
+	//auto leftStickCollDownRightYPos = _playerLeft.getComponent<component::Transform>().getPosition().y - 0.5f;
 
-	if (ballDir.x < 0) {
-		if (ballYPos < leftStickCollUpRightYPos && ballYPos > leftStickCollDownRightYPos) {
-			if (ballXPos < leftStickCollUpRightXPos + 0.01f && ballXPos > leftStickCollUpRightXPos - 0.01f) {
-				_ball.getComponent<component::TranslateItem>().axis.x = 1.0f;
-			}
-		}
-	}
+	//if (ballDir.x < 0) {
+	//	if (ballYPos < leftStickCollUpRightYPos && ballYPos > leftStickCollDownRightYPos) {
+	//		if (ballXPos < leftStickCollUpRightXPos + 0.01f && ballXPos > leftStickCollUpRightXPos - 0.01f) {
+	//			_ball.getComponent<component::TranslateItem>().axis.x = 1.0f;
+	//		}
+	//	}
+	//}
 
-	// right player bouncing
-	auto rightStickCollUpRightXPos = _playerRight.getComponent<component::Transform>().getPosition().x - 0.2f;
-	auto rightStickCollUpRightYPos = _playerRight.getComponent<component::Transform>().getPosition().y + 0.5f;
-	auto rightStickCollDownRightYPos = _playerRight.getComponent<component::Transform>().getPosition().y - 0.5f;
+	//// right player bouncing
+	//auto rightStickCollUpRightXPos = _playerRight.getComponent<component::Transform>().getPosition().x - 0.2f;
+	//auto rightStickCollUpRightYPos = _playerRight.getComponent<component::Transform>().getPosition().y + 0.5f;
+	//auto rightStickCollDownRightYPos = _playerRight.getComponent<component::Transform>().getPosition().y - 0.5f;
 
-	if (ballDir.x > 0) {
-		if (ballYPos < rightStickCollUpRightYPos && ballYPos > rightStickCollDownRightYPos) {
-			if (ballXPos > rightStickCollUpRightXPos - 0.01f && ballXPos < rightStickCollUpRightXPos + 0.01f) {
-				_ball.getComponent<component::TranslateItem>().axis.x = -1.0f;
-			}
-		}
-	}
+	//if (ballDir.x > 0) {
+	//	if (ballYPos < rightStickCollUpRightYPos && ballYPos > rightStickCollDownRightYPos) {
+	//		if (ballXPos > rightStickCollUpRightXPos - 0.01f && ballXPos < rightStickCollUpRightXPos + 0.01f) {
+	//			_ball.getComponent<component::TranslateItem>().axis.x = -1.0f;
+	//		}
+	//	}
+	//}
 }
 
 FsmEventAction PongDemoState::onKeyPress(SDL_KeyboardEvent& event) {

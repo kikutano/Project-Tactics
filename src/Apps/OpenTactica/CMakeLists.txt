@@ -11,6 +11,7 @@ set(SOURCES
     States/LoadState.cpp
     States/UnloadState.cpp
     States/PongDemoState.cpp
+    Component/BallMovement.cpp
     Component/BattleCamera.cpp
     Component/CharacterFacing.cpp
     Component/PlayerMovement.cpp
@@ -27,6 +28,7 @@ set(HEADERS
     States/LoadState.h
     States/UnloadState.h
     States/PongDemoState.h
+    Component/BallMovement.h
     Component/BattleCamera.h
     Component/CharacterFacing.h
     Component/PlayerMovement.h
