@@ -19,8 +19,9 @@ struct BallMovement {
 
 class BallMovementSystem {
 public:
-	static void update(const ecs_view<Transform, TranslateItem, BallMovement>& view);
-	static void _updateBallCollisionWithWall(Transform& transform, TranslateItem& translateItem);
-	static void _updateBallCollisionWithPlayer();
+	static void update(const ecs_view<Transform, TranslateItem, BallMovement>& view,
+					   const ecs_view<Transform, Rectangle2DCollider>& viewCollider);
+	static void _updateCollisionWithWall(Transform& transform, TranslateItem& translateItem);
+	static void _updateCollisionWithPlayer(Transform& ballTransform, Rectangle2DCollider& collider);
 };
 } // namespace tactics::component

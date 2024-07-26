@@ -15,6 +15,7 @@ set(SOURCES
     Component/BattleCamera.cpp
     Component/CharacterFacing.cpp
     Component/PlayerMovement.cpp
+    Component/Rectangle2DCollider.cpp
     Component/RotateAroundPoint.cpp
     Component/RotateItem.cpp
     Component/TranslateItem.cpp)
@@ -32,6 +33,7 @@ set(HEADERS
     Component/BattleCamera.h
     Component/CharacterFacing.h
     Component/PlayerMovement.h
+    Component/Rectangle2DCollider.h
     Component/RotateAroundPoint.h
     Component/RotateItem.h
     Component/TranslateItem.h)

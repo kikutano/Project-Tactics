@@ -22,6 +22,10 @@
     "playerMovement": {
 
     },
+    "rectangle2DCollider": {
+        "heightFromCenter": 0.5,
+        "widthFromCenter": 0.5
+    }
     "mesh": {
         "mesh": "quad",
         "materials": [

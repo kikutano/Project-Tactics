@@ -63,27 +63,9 @@ FsmAction PongDemoState::update() {
 		ecs.sceneRegistry().view<component::Transform, component::TranslateItem, component::BallMovement>());
 
 	// wall bouncing
-	_updateBallCollisionWithWall();
 	_updateBallCollisionWithPlayer();
 
 	return FsmAction::none();
-}
-
-void PongDemoState::_updateBallCollisionWithWall() {
-	/*if (_ball.getComponent<component::Transform>().getPosition().y > 2.5f) {
-		_ball.getComponent<component::TranslateItem>().axis.y *= -1.0f;
-	} else if (_ball.getComponent<component::Transform>().getPosition().y < -2.5f) {
-		_ball.getComponent<component::TranslateItem>().axis.y *= -1.0f;
-	}
-
-	if (_ball.getComponent<component::Transform>().getPosition().x > 5.0f) {
-		_ball.getComponent<component::TranslateItem>().axis.x *= -1.0f;
-		_ball.getComponent<component::Transform>().setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-
-	} else if (_ball.getComponent<component::Transform>().getPosition().x < -5.0f) {
-		_ball.getComponent<component::TranslateItem>().axis.x *= -1.0f;
-		_ball.getComponent<component::Transform>().setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	}*/
 }
 
 void PongDemoState::_updateBallCollisionWithPlayer() {

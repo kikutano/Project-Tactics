@@ -1,5 +1,7 @@
 #include "BallMovement.h"
 
+#include "Rectangle2DCollider.h"
+
 #include <Libs/Utility/Time/EngineTime.h>
 
 namespace tactics::component {
@@ -10,13 +12,18 @@ void BallMovement::defineReflection() {
 		.data<&BallMovement::axis>("axis"_id);
 }
 
-void BallMovementSystem::update(const ecs_view<Transform, TranslateItem, BallMovement>& view) {
+void BallMovementSystem::update(const ecs_view<Transform, TranslateItem, BallMovement>& view,
+								const ecs_view<Transform, Rectangle2DCollider>& viewCollider) {
 	view.each([](auto& transform, auto& translateItem, auto& /* ballMovement*/) {
-		_updateBallCollisionWithWall(transform, translateItem);
+		_updateCollisionWithWall(transform, translateItem);
+	});
+
+	viewCollider.each([](auto& transform, auto& collider) {
+		_updateCollisionWithPlayer(transform, collider);
 	});
 }
 
-void BallMovementSystem::_updateBallCollisionWithWall(Transform& transform, TranslateItem& translateItem) {
+void BallMovementSystem::_updateCollisionWithWall(Transform& transform, TranslateItem& translateItem) {
 	if (transform.getPosition().y > 2.5f) {
 		translateItem.axis.y *= -1.0f;
 	} else if (transform.getPosition().y < -2.5f) {
@@ -33,7 +40,7 @@ void BallMovementSystem::_updateBallCollisionWithWall(Transform& transform, Tran
 	}
 }
 
-void BallMovementSystem::_updateBallCollisionWithPlayer() {
+void BallMovementSystem::_updateCollisionWithPlayer(Transform& ballTransform, Rectangle2DCollider& collider) {
 	/*auto ballYPos = _ball.getComponent<component::Transform>().getPosition().y;
 	auto ballXPos = _ball.getComponent<component::Transform>().getPosition().x;
 	auto ballDir = _ball.getComponent<component::TranslateItem>().axis;
