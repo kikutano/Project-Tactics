@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Rectangle2DCollider.h"
 #include "TranslateItem.h"
 
 #include <Libs/Ecs/Component/TransformComponent.h>
@@ -9,16 +10,19 @@
 #include <glm/glm.hpp>
 
 namespace tactics::component {
+
 struct Rectangle2DCollider {
 	float heightFromCenter;
 	float widthFromCenter;
+	glm::vec3 center = Vector3::zero;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Rectangle2DCollider, heightFromCenter, widthFromCenter);
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Rectangle2DCollider, center, heightFromCenter, widthFromCenter);
 	static void defineReflection();
 };
 
 class Rectangle2DColliderSystem {
 public:
+	// const float getUpperLimitPosition() const {return }
 	static void update(const ecs_view<Transform, Rectangle2DCollider>& view);
 };
 } // namespace tactics::component

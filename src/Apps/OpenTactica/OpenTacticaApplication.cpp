@@ -4,6 +4,7 @@
 #include "Component/BattleCamera.h"
 #include "Component/CharacterFacing.h"
 #include "Component/PlayerMovement.h"
+#include "Component/Rectangle2DCollider.h"
 #include "Component/RotateAroundPoint.h"
 #include "Component/RotateItem.h"
 #include "Component/TranslateItem.h"
@@ -25,6 +26,7 @@ void OpenTacticaApplication::setupComponentReflections() {
 	using namespace component;
 	defineComponentsReflection<BattleCamera,
 							   CharacterFacing,
+							   Rectangle2DCollider,
 							   RotateItem,
 							   RotateAroundPoint,
 							   TranslateItem,

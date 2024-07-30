@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Rectangle2DCollider.h"
 #include "TranslateItem.h"
 
 #include <Libs/Ecs/Component/TransformComponent.h>
@@ -22,6 +23,9 @@ public:
 	static void update(const ecs_view<Transform, TranslateItem, BallMovement>& view,
 					   const ecs_view<Transform, Rectangle2DCollider>& viewCollider);
 	static void _updateCollisionWithWall(Transform& transform, TranslateItem& translateItem);
-	static void _updateCollisionWithPlayer(Transform& ballTransform, Rectangle2DCollider& collider);
+	static void _updateCollisionWithPlayer(Transform& ballTransform,
+										   TranslateItem& ballTranslate,
+										   Transform& playerTransform,
+										   Rectangle2DCollider& collider);
 };
 } // namespace tactics::component

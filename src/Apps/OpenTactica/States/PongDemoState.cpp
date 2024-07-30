@@ -35,6 +35,8 @@ FsmAction PongDemoState::enter() {
 
 	_playerLeft.getComponent<component::PlayerMovement>().keyCodeDown = SDLK_s;
 	_playerLeft.getComponent<component::PlayerMovement>().keyCodeUp = SDLK_w;
+	_playerRight.getComponent<component::PlayerMovement>().keyCodeDown = SDLK_l;
+	_playerRight.getComponent<component::PlayerMovement>().keyCodeUp = SDLK_o;
 
 	// auto& resourceSystem = getService<resource::ResourceSystem>();
 
@@ -58,46 +60,14 @@ void PongDemoState::exit() {
 FsmAction PongDemoState::update() {
 	auto& ecs = getService<EntityComponentSystem>();
 	component::TranslateItemSystem::update(ecs.sceneRegistry().view<component::Transform, component::TranslateItem>());
+	component::Rectangle2DColliderSystem::update(
+		ecs.sceneRegistry().view<component::Transform, component::Rectangle2DCollider>());
 
 	component::BallMovementSystem::update(
-		ecs.sceneRegistry().view<component::Transform, component::TranslateItem, component::BallMovement>());
-
-	// wall bouncing
-	_updateBallCollisionWithPlayer();
+		ecs.sceneRegistry().view<component::Transform, component::TranslateItem, component::BallMovement>(),
+		ecs.sceneRegistry().view<component::Transform, component::Rectangle2DCollider>());
 
 	return FsmAction::none();
-}
-
-void PongDemoState::_updateBallCollisionWithPlayer() {
-	//auto ballYPos = _ball.getComponent<component::Transform>().getPosition().y;
-	//auto ballXPos = _ball.getComponent<component::Transform>().getPosition().x;
-	//auto ballDir = _ball.getComponent<component::TranslateItem>().axis;
-
-	//// left player bouncing
-	//auto leftStickCollUpRightXPos = _playerLeft.getComponent<component::Transform>().getPosition().x + 0.2f;
-	//auto leftStickCollUpRightYPos = _playerLeft.getComponent<component::Transform>().getPosition().y + 0.5f;
-	//auto leftStickCollDownRightYPos = _playerLeft.getComponent<component::Transform>().getPosition().y - 0.5f;
-
-	//if (ballDir.x < 0) {
-	//	if (ballYPos < leftStickCollUpRightYPos && ballYPos > leftStickCollDownRightYPos) {
-	//		if (ballXPos < leftStickCollUpRightXPos + 0.01f && ballXPos > leftStickCollUpRightXPos - 0.01f) {
-	//			_ball.getComponent<component::TranslateItem>().axis.x = 1.0f;
-	//		}
-	//	}
-	//}
-
-	//// right player bouncing
-	//auto rightStickCollUpRightXPos = _playerRight.getComponent<component::Transform>().getPosition().x - 0.2f;
-	//auto rightStickCollUpRightYPos = _playerRight.getComponent<component::Transform>().getPosition().y + 0.5f;
-	//auto rightStickCollDownRightYPos = _playerRight.getComponent<component::Transform>().getPosition().y - 0.5f;
-
-	//if (ballDir.x > 0) {
-	//	if (ballYPos < rightStickCollUpRightYPos && ballYPos > rightStickCollDownRightYPos) {
-	//		if (ballXPos > rightStickCollUpRightXPos - 0.01f && ballXPos < rightStickCollUpRightXPos + 0.01f) {
-	//			_ball.getComponent<component::TranslateItem>().axis.x = -1.0f;
-	//		}
-	//	}
-	//}
 }
 
 FsmEventAction PongDemoState::onKeyPress(SDL_KeyboardEvent& event) {
