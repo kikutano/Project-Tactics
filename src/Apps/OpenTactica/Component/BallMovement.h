@@ -26,6 +26,6 @@ public:
 	static void _updateCollisionWithPlayer(Transform& ballTransform,
 										   TranslateItem& ballTranslate,
 										   Transform& playerTransform,
-										   Rectangle2DCollider& collider);
+										   Rectangle2DCollider& playerCollider);
 };
 } // namespace tactics::component

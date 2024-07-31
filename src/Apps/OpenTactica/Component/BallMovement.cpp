@@ -43,8 +43,17 @@ void BallMovementSystem::_updateCollisionWithWall(Transform& transform, Translat
 void BallMovementSystem::_updateCollisionWithPlayer(Transform& ballTransform,
 													TranslateItem& ballTranslate,
 													Transform& playerTransform,
-													Rectangle2DCollider& /* collider*/) {
-	auto ballYPos = ballTransform.getPosition().y;
+													Rectangle2DCollider& playerCollider) {
+	auto ballDir = ballTranslate.axis;
+	if (playerCollider.intersect(ballTransform.getPosition())) {
+		if (ballDir.x > 0) {
+			ballTranslate.axis.x = -1.0f;
+		} else {
+			ballTranslate.axis.x = 1.0f;
+		}
+	}
+
+	/*auto ballYPos = ballTransform.getPosition().y;
 	auto ballXPos = ballTransform.getPosition().x;
 	auto ballDir = ballTranslate.axis;
 
@@ -68,7 +77,7 @@ void BallMovementSystem::_updateCollisionWithPlayer(Transform& ballTransform,
 				ballTranslate.axis.x = -1.0f;
 			}
 		}
-	}
+	}*/
 }
 
 } // namespace tactics::component
