@@ -19,7 +19,9 @@
         },
         "speed": 4
     },
-    "PlayerMovement": {},
+    "PlayerMovementInput": {
+        "movePlayer": "movePlayer"
+    },
     "Rectangle2DCollider": {
         "heightFromCenter": 0.5,
         "widthFromCenter": 0.5
