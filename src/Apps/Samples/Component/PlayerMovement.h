@@ -13,11 +13,9 @@
 namespace tactics::component {
 struct PlayerMovement {
 	bool active;
-	SDL_KeyCode keyCodeUp;
-	SDL_KeyCode keyCodeDown;
 
-	void moveDown();
-	void moveUp();
+	void moveUp(TranslateItem& translateItem);
+	void moveDown(TranslateItem& translateItem);
 
 	REFLECT(PlayerMovement, active);
 };
@@ -30,9 +28,6 @@ struct PlayerMovementInput {
 
 class PlayerMovementSystem {
 public:
-	// static void onKeyPress(SDL_KeyboardEvent& event, const ecs_view<Transform, TranslateItem, PlayerMovement>& view);
-	// static void onKeyRelease(SDL_KeyboardEvent& event, const ecs_view<Transform, TranslateItem, PlayerMovement>&
-	// view);
 	static void update(entt::registry& registry);
 
 private:

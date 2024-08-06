@@ -9,53 +9,27 @@ void PlayerMovementSystem::update(entt::registry& registry) {
 }
 
 void PlayerMovementSystem::_updateInputs(entt::registry& registry) {
-	auto view = registry.view<PlayerMovement, PlayerMovementInput>();
-	for (auto [entity, playerMovement, input] : view.each()) {
+	auto view = registry.view<TranslateItem, PlayerMovement, PlayerMovementInput>();
+	for (auto [entity, translateItem, playerMovement, input] : view.each()) {
 		if (input.movePlayer->isTriggered()) {
 			auto& value = input.movePlayer->getInputValue();
 			if (value.scalar > 0) {
-				playerMovement.moveUp();
+				playerMovement.moveUp(translateItem);
+			} else if (value.scalar < 0) {
+				playerMovement.moveDown(translateItem);
 			} else {
-				playerMovement.moveDown();
+				translateItem.axis = Vector3::zero;
 			}
 		}
 	}
 }
 
-void PlayerMovement::moveUp() {
-	Log::trace(Log::Game, "up!");
+void PlayerMovement::moveUp(TranslateItem& translateItem) {
+	translateItem.axis = Vector3::up;
 }
 
-void PlayerMovement::moveDown() {
-	Log::trace(Log::Game, "down!");
+void PlayerMovement::moveDown(TranslateItem& translateItem) {
+	translateItem.axis = Vector3::down;
 }
-
-// void PlayerMovementSystem::onKeyPress(SDL_KeyboardEvent& event,
-//									  const ecs_view<Transform, TranslateItem, PlayerMovement>& view) {
-//	view.each([event](auto& transform, auto& translateItem, auto& playerMovement) {
-//		if (event.keysym.sym == playerMovement.keyCodeDown) {
-//			if (transform.getPosition().y > -2.1f) {
-//				translateItem.axis = Vector3::down;
-//			} else {
-//				translateItem.axis = Vector3::zero;
-//			}
-//		} else if (event.keysym.sym == playerMovement.keyCodeUp) {
-//			if (transform.getPosition().y < 2.1f) {
-//				translateItem.axis = Vector3::up;
-//			} else {
-//				translateItem.axis = Vector3::zero;
-//			}
-//		}
-//	});
-// }
-//
-// void PlayerMovementSystem::onKeyRelease(SDL_KeyboardEvent& event,
-//										const ecs_view<Transform, TranslateItem, PlayerMovement>& view) {
-//	view.each([event](auto& /*transform*/, auto& translateItem, auto& playerMovement) {
-//		if (event.keysym.sym == playerMovement.keyCodeUp || event.keysym.sym == playerMovement.keyCodeDown) {
-//			translateItem.axis = Vector3::zero;
-//		}
-//	});
-// }
 
 } // namespace tactics::component

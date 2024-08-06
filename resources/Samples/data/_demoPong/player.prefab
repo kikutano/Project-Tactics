@@ -19,6 +19,7 @@
         },
         "speed": 4
     },
+    "PlayerMovement": {},
     "PlayerMovementInput": {
         "movePlayer": "movePlayer"
     },

@@ -48,10 +48,9 @@ FsmAction DemoPongState::update() {
 	auto& inputSystem = getService<InputSystem>();
 	if (inputSystem.checkAction("exitFromState")) {
 		return FsmAction::transition("exit"_id);
-	} else if (inputSystem.checkAction("playerMovement")) {
-		component::PlayerMovementSystem::update(ecs.sceneRegistry());
-		//Log::trace(Log::Game, "Player movement action detected");
 	}
+
+	component::PlayerMovementSystem::update(ecs.sceneRegistry());
 
 	component::TranslateItemSystem::update(ecs.sceneRegistry().view<component::Transform, component::TranslateItem>());
 	component::Rectangle2DColliderSystem::update(
