@@ -38,7 +38,7 @@
             }
         },
         "InputAction": {
-            "playerMovement": {
+            "movePlayer": {
                 "type": "Scalar",
                 "normalized": true
             }
@@ -47,7 +47,7 @@
             "pongMapping": {
                 "bindings": [
                     {
-                        "action": "playerMovement",
+                        "action": "movePlayer",
                         "gestures": [
                             {
                                 "gesture": {

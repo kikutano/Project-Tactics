@@ -23,9 +23,9 @@ struct PlayerMovement {
 };
 
 struct PlayerMovementInput {
-	resource::InputAction::Ptr playerMovement;
+	resource::InputAction::Ptr movePlayer;
 
-	REFLECT(PlayerMovementInput, playerMovement);
+	REFLECT(PlayerMovementInput, movePlayer);
 };
 
 class PlayerMovementSystem {

@@ -11,8 +11,8 @@ void PlayerMovementSystem::update(entt::registry& registry) {
 void PlayerMovementSystem::_updateInputs(entt::registry& registry) {
 	auto view = registry.view<PlayerMovement, PlayerMovementInput>();
 	for (auto [entity, playerMovement, input] : view.each()) {
-		if (input.playerMovement->isTriggered()) {
-			auto& value = input.playerMovement->getInputValue();
+		if (input.movePlayer->isTriggered()) {
+			auto& value = input.movePlayer->getInputValue();
 			if (value.scalar > 0) {
 				playerMovement.moveUp();
 			} else {
