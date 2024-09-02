@@ -21,7 +21,7 @@
     },
     "PlayerMovement": {},
     "PlayerMovementInput": {
-        "movePlayer": "movePlayer"
+        "movePlayer": "movePlayer1"
     },
     "Rectangle2DCollider": {
         "heightFromCenter": 0.5,
@@ -36,7 +36,7 @@
         ]
     },
     "Sprite": {
-        "spriteSheet": "player00",
+        "spriteSheet": "player01",
         "spriteIndex": 0
     }
 }

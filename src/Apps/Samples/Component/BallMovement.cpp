@@ -38,40 +38,11 @@ void BallMovementSystem::_updateCollisionWithPlayer(Transform& ballTransform,
 													TranslateItem& ballTranslate,
 													Transform& /*playerTransform*/,
 													Rectangle2DCollider& playerCollider) {
-	auto ballDir = ballTranslate.axis;
-	if (playerCollider.intersect(ballTransform.getPosition())) {
-		if (ballDir.x > 0) {
-			ballTranslate.axis.x = -1.0f;
-		} else {
-			ballTranslate.axis.x = 1.0f;
-		}
+	auto nextPos =
+		ballTransform.getPosition() + ballTranslate.axis * ballTranslate.speed * EngineTime::fixedDeltaTime<float>();
+	if (playerCollider.intersect(nextPos)) {
+		ballTranslate.axis.x *= -1;
 	}
-
-	/*auto ballYPos = ballTransform.getPosition().y;
-	auto ballXPos = ballTransform.getPosition().x;
-	auto ballDir = ballTranslate.axis;
-
-	if (ballDir.x < 0) {
-		auto leftStickCollUpRightXPos = playerTransform.getPosition().x + 0.2f;
-		auto leftStickCollUpRightYPos = playerTransform.getPosition().y + 0.5f;
-		auto leftStickCollDownRightYPos = playerTransform.getPosition().y - 0.5f;
-
-		if (ballYPos < leftStickCollUpRightYPos && ballYPos > leftStickCollDownRightYPos) {
-			if (ballXPos < leftStickCollUpRightXPos + 0.01f && ballXPos > leftStickCollUpRightXPos - 0.01f) {
-				ballTranslate.axis.x = 1.0f;
-			}
-		}
-	} else {
-		auto rightStickCollUpRightXPos = playerTransform.getPosition().x - 0.2f;
-		auto rightStickCollUpRightYPos = playerTransform.getPosition().y + 0.5f;
-		auto rightStickCollDownRightYPos = playerTransform.getPosition().y - 0.5f;
-
-		if (ballYPos < rightStickCollUpRightYPos && ballYPos > rightStickCollDownRightYPos) {
-			if (ballXPos > rightStickCollUpRightXPos - 0.01f && ballXPos < rightStickCollUpRightXPos + 0.01f) {
-				ballTranslate.axis.x = -1.0f;
-			}
-		}
-	}*/
 }
 
 } // namespace tactics::component

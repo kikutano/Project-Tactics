@@ -8,6 +8,7 @@
 
 #include <Libs/Ecs/Component/CameraComponent.h>
 #include <Libs/Ecs/Component/MeshComponent.h>
+#include <Libs/Ecs/Component/SpriteComponent.h>
 #include <Libs/Ecs/Component/TransformComponent.h>
 #include <Libs/Ecs/EntityComponentSystem.h>
 #include <Libs/Input/InputSystem.h>
@@ -25,9 +26,10 @@ FsmAction DemoPongState::enter() {
 	auto& inputSystem = getService<InputSystem>();
 	inputSystem.assignInputMap("pongMapping");
 
-	_playerLeft = sceneSystem.createEntity("playerLeft"_id, "player"_id);
-	_playerRight = sceneSystem.createEntity("playerRight"_id, "player"_id);
+	_playerLeft = sceneSystem.createEntity("playerLeft"_id, "player1"_id);
+	_playerRight = sceneSystem.createEntity("playerRight"_id, "player2"_id);
 	_ball = sceneSystem.createEntity("ball"_id, "ball"_id);
+	sceneSystem.createEntity("scorebarLeftBg"_id, "scorebarBg"_id);
 
 	auto& playerLeftTransform = _playerLeft.getComponent<component::Transform>();
 	auto& playerRightTransform = _playerRight.getComponent<component::Transform>();
@@ -63,27 +65,4 @@ FsmAction DemoPongState::update() {
 	return FsmAction::none();
 }
 
-/*
-FsmEventAction PongDemoState::onKeyPress(SDL_KeyboardEvent& event) {
-	if (event.keysym.sym == SDLK_ESCAPE) {
-		return FsmEventAction::transition("exit"_id);
-	}
-
-	auto& ecs = getService<EntityComponentSystem>();
-	component::PlayerMovementSystem::onKeyPress(
-		event,
-		ecs.sceneRegistry().view<component::Transform, component::TranslateItem, component::PlayerMovement>());
-
-	return FsmEventAction::none();
-}
-
-FsmEventAction PongDemoState::onKeyRelease(SDL_KeyboardEvent& event) {
-	auto& ecs = getService<EntityComponentSystem>();
-	component::PlayerMovementSystem::onKeyRelease(
-		event,
-		ecs.sceneRegistry().view<component::Transform, component::TranslateItem, component::PlayerMovement>());
-
-	return FsmEventAction::none();
-}
-*/
 } // namespace tactics

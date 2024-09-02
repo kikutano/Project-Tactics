@@ -14,9 +14,6 @@ namespace tactics::component {
 struct PlayerMovement {
 	bool active;
 
-	void moveUp(TranslateItem& translateItem);
-	void moveDown(TranslateItem& translateItem);
-
 	REFLECT(PlayerMovement, active);
 };
 
