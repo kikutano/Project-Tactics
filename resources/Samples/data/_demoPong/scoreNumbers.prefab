@@ -1,14 +1,14 @@
 {
     "Transform": {
         "position": {
-            "x": -3.4,
-            "y": 2.65,
+            "x": 0,
+            "y": 0,
             "z": 0
         },
         "scale": {
             "x": 0.5,
             "y": 0.5,
-            "z": 1
+            "z": 0.5
         }
     },
     "Mesh": {
@@ -20,7 +20,7 @@
         ]
     },
     "Sprite": {
-        "spriteSheet": "scoreBarBg",
-        "spriteIndex": 0
+        "spriteSheet": "score0",
+        "spriteIndex": 1
     }
 }

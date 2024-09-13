@@ -3,6 +3,7 @@
 #include "../Component/BallMovement.h"
 #include "../Component/PlayerMovement.h"
 #include "../Component/TranslateItem.h"
+#include "../Component/RotateItem.h"
 
 #include <Engine/Scene/SceneSystem.h>
 
@@ -29,13 +30,22 @@ FsmAction DemoPongState::enter() {
 	_playerLeft = sceneSystem.createEntity("playerLeft"_id, "player1"_id);
 	_playerRight = sceneSystem.createEntity("playerRight"_id, "player2"_id);
 	_ball = sceneSystem.createEntity("ball"_id, "ball"_id);
-	sceneSystem.createEntity("scorebarLeftBg"_id, "scorebarBg"_id);
+	
+	Entity scorebarLeftBg = sceneSystem.createEntity("scorebarLeftBg"_id, "scorebarBg"_id);
+	Entity scorebarRightBg = sceneSystem.createEntity("scorebarLeftBg"_id, "scorebarBg"_id);
+	Entity scoreLeft = sceneSystem.createEntity("scoreLeft"_id, "scoreNumbers"_id);
+	Entity background = sceneSystem.createEntity("background"_id, "background"_id);
 
 	auto& playerLeftTransform = _playerLeft.getComponent<component::Transform>();
 	auto& playerRightTransform = _playerRight.getComponent<component::Transform>();
 
+	scorebarLeftBg.getComponent<component::Transform>().setPosition(glm::vec3(-3.4f, 2.65f, 0.0f));
+	scorebarRightBg.getComponent<component::Transform>().setPosition(glm::vec3(3.4f, 2.65f, 0.0f));
+
 	playerLeftTransform.setPosition(glm::vec3(-4.0f, 0.0f, 0.0f));
 	playerRightTransform.setPosition(glm::vec3(4.0f, 0.0f, 0.0f));
+
+	scoreLeft.getComponent<component::Sprite>().spriteIndex = 2;
 
 	return FsmAction::none();
 }
@@ -48,6 +58,8 @@ void DemoPongState::exit() {
 FsmAction DemoPongState::update() {
 	auto& ecs = getService<EntityComponentSystem>();
 	auto& inputSystem = getService<InputSystem>();
+	auto& registry = getService<EntityComponentSystem>().sceneRegistry();
+	component::RotateItemSystem::update(registry);
 	if (inputSystem.checkAction("exitFromState")) {
 		return FsmAction::transition("exit"_id);
 	}

@@ -16,35 +16,57 @@
             "spritePointsBG": {
                 "path": "_demoPong/ScoreBarBg.png",
                 "filter": "Nearest"
+            },
+            "spriteScore": {
+                "path": "_demoPong/ScoreNumbers.png",
+                "filter": "Nearest"
+            },
+            "spriteBackground": {
+                "path": "_demoPong/background.png",
+                "filter": "Nearest"
             }
         },
         "SpriteSheet": {
             "player01": {
                 "texture": "spritePlayer1",
                 "spriteSize": {
-                    "x": 17,
-                    "y": 120
+                    "x": 20,
+                    "y": 128
                 }
             },
             "player02": {
                 "texture": "spritePlayer2",
                 "spriteSize": {
-                    "x": 17,
-                    "y": 120
+                    "x": 20,
+                    "y": 128
                 }
             },
             "ball00": {
                 "texture": "spriteBall",
                 "spriteSize": {
-                    "x": 30,
-                    "y": 30
+                    "x": 64,
+                    "y": 64
                 }
             },
             "scoreBarBg": {
                 "texture": "spritePointsBG",
                 "spriteSize": {
-                    "x": 341,
-                    "y": 47
+                    "x": 64,
+                    "y": 64
+                }
+            },
+            "score0": {
+                "texture": "spriteScore",
+                "spriteSize": {
+                    "x": 80,
+                    "y": 96
+                }
+            },
+            "background": {
+                "texture": "spriteBackground",
+                "spriteSize": {
+                    "x": 1280,
+                    "y": 1280
                 }
             }
         },
@@ -62,7 +84,13 @@
                 "path": "_demoPong/ball.prefab"
             },
             "scorebarBg": {
-                "path":  "_demoPong/scorebarBg.prefab"
+                "path": "_demoPong/scorebarBg.prefab"
+            },
+            "scoreNumbers": {
+                "path": "_demoPong/scoreNumbers.prefab"
+            },
+            "background": {
+                "path": "_demoPong/background.prefab"
             }
         },
         "InputAction": {
