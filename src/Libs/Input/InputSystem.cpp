@@ -55,8 +55,13 @@ const click::Player& InputSystem::getPlayer(click::PlayerId playerId) const {
 	return click::player(playerId);
 }
 
-void InputSystem::processEvents(SDL_Event& event) {
+void InputSystem::processEvents(const SDL_Event& event) {
 	click::processSdlEvents(event);
+	if (event.type == SDL_WINDOWEVENT) {
+		if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+			changeScreenSize({static_cast<float>(event.window.data1), static_cast<float>(event.window.data2)});
+		}
+	}
 }
 
 void InputSystem::changeScreenSize(const glm::vec2& screenSize) {
@@ -156,6 +161,16 @@ const click::ActionState& InputSystem::getActionState(click::ActionId actionId, 
 
 const click::ActionValue& InputSystem::getInputCodeValue(click::InputCode inputCode, click::PlayerId playerId) const {
 	return click::inputValue(inputCode, playerId);
+}
+
+void InputSystem::lockMouseToWindow(bool lock) {
+	if (lock) {
+		SDL_ShowCursor(SDL_DISABLE);
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+	} else {
+		SDL_ShowCursor(SDL_ENABLE);
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+	}
 }
 
 bool InputSystem::checkAction(const char* inputActionName, click::PlayerId playerId) const {

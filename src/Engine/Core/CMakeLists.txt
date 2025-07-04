@@ -6,8 +6,10 @@ set(SOURCES
     DefaultFsmExternalController.cpp
     Engine.cpp
     ResourceSystemInitializer.cpp
-    RenderSteps/PrepareViewportRenderStep.cpp
+    RenderSteps/PrepareCameraViewportRenderStep.cpp
+    RenderSteps/DrawDebugRenderStep.cpp
     RenderSteps/DrawMeshesRenderStep.cpp
+    RenderSteps/DrawUiRenderStep.cpp
     RenderSteps/ImGuiRenderSteps.cpp)
     
 set(HEADERS
@@ -15,8 +17,10 @@ set(HEADERS
     DefaultFsmExternalController.h
     Engine.h
     ResourceSystemInitializer.h
-    RenderSteps/PrepareViewportRenderStep.h
+    RenderSteps/PrepareCameraViewportRenderStep.h
+    RenderSteps/DrawDebugRenderStep.h
     RenderSteps/DrawMeshesRenderStep.h
+    RenderSteps/DrawUiRenderStep.h
     RenderSteps/ImGuiRenderSteps.h)
 
 add_library(engine_core ${SOURCES} ${HEADERS})
@@ -33,7 +37,9 @@ target_link_libraries(engine_core
     libs_ecs
     libs_utility
     libs_filesystem
-    libs_input)
+    libs_input
+    libs_ui
+    libs_physics)
 add_to_engine_folder(engine_core)
 
 unset(SOURCES)

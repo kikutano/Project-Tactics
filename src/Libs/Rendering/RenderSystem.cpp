@@ -21,7 +21,7 @@ RenderSystem::RenderSystem(std::shared_ptr<resource::IniFile> configFile) : _con
 	_initializeGlContext();
 	_initializeImGui();
 
-	auto useDebugMessages = _getConfigValue("useDebugMessages", false);
+	auto useDebugMessages = _getConfigValue("enableDebugMessages", false);
 	if (useDebugMessages) {
 		_debugMessageHandler = std::make_unique<DebugMessageHandler>();
 	}
@@ -44,6 +44,10 @@ RenderQueue& RenderSystem::createRenderQueue() {
 	return *_renderQueues.back().get();
 }
 
+void RenderSystem::destroyRenderQueues() {
+	_renderQueues.clear();
+}
+
 void RenderSystem::_setupGlAttributes() {
 	_setupDoubleBuffer();
 	_setupOglVersion();
@@ -63,8 +67,10 @@ void RenderSystem::_createWindow() {
 	_window = SDL_CreateWindow(windowTitle.c_str(), position.x, position.y, size.x, size.y, flags);
 	LOG_TRACE(Log::Rendering, "Window Created {}x{}", size.x, size.y);
 	if (_window == nullptr) {
-		throw TACTICS_EXCEPTION("Failed to open window: %s\n", SDL_GetError());
+		TACTICS_EXCEPTION("Failed to open window: %s\n", SDL_GetError());
 	}
+
+	_windowSize = {size.x, size.y};
 }
 
 void RenderSystem::_initializeGlContext() {
@@ -74,14 +80,14 @@ void RenderSystem::_initializeGlContext() {
 
 	int version = gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress);
 	if (version == 0) {
-		throw TACTICS_EXCEPTION("Failed to initialize OpenGL context\n");
+		TACTICS_EXCEPTION("Failed to initialize OpenGL context\n");
 	}
 
 	LOG_TRACE(Log::Rendering, "Loaded OpenGL {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
 }
 
 void RenderSystem::render() {
-	RenderStepInfo renderInfo{};
+	RenderStepInfo renderInfo{_viewport, getWindowSize()};
 
 	for (auto& renderQueue : _renderQueues) {
 		renderQueue->execute(renderInfo);
@@ -129,9 +135,8 @@ void RenderSystem::_setupVSync() {
 	} else if (enableVSyncStr == "adaptive") {
 		swapInterval = -1;
 	} else {
-		throw TACTICS_EXCEPTION(
-			"Invalid value for enableVSync in the config file. Expected 'true/false/adaptive', got %s",
-			enableVSyncStr.c_str());
+		TACTICS_EXCEPTION("Invalid value for enableVSync in the config file. Expected 'true/false/adaptive', got %s",
+						  enableVSyncStr.c_str());
 	}
 	SDL_GL_SetSwapInterval(swapInterval);
 }
@@ -145,8 +150,8 @@ void RenderSystem::_setupOglContextProfile() {
 	} else if (contextProfile == "es") {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	} else {
-		throw TACTICS_EXCEPTION("Invalid rendering context profile provided: %s, check your ini config file.",
-								contextProfile);
+		TACTICS_EXCEPTION("Invalid rendering context profile provided: %s, check your ini config file.",
+						  contextProfile);
 	}
 }
 
@@ -155,10 +160,30 @@ void RenderSystem::_setupDoubleBuffer() {
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, enableDoubleBuffer ? 1 : 0);
 }
 
-glm::vec2 RenderSystem::getWindowSize() const {
-	int width, height;
-	SDL_GetWindowSize(_window, &width, &height);
-	return {width, height};
+const glm::u32vec2& RenderSystem::getWindowSize() const {
+	return _windowSize;
+}
+
+void RenderSystem::setViewport(const glm::vec2& position, const glm::vec2& size, glm::vec4 clearColor) {
+	_viewport.position = position;
+	_viewport.size = size;
+	_viewport.clearColor = clearColor;
+}
+
+const Viewport& RenderSystem::getViewport() const {
+	return _viewport;
+}
+
+bool RenderSystem::onEvent(const SDL_Event& event) {
+	switch (event.type) {
+	case SDL_WINDOWEVENT: {
+		if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+			_windowSize = {event.window.data1, event.window.data2};
+		}
+		break;
+	}
+	}
+	return false;
 }
 
 } // namespace tactics

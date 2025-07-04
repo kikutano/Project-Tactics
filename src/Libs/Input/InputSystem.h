@@ -27,7 +27,7 @@ public:
 	const click::Player& getPlayer(click::PlayerId playerId) const;
 
 	void changeScreenSize(const glm::vec2& screenSize);
-	void processEvents(SDL_Event& event);
+	void processEvents(const SDL_Event& event);
 	void update();
 
 	bool checkAction(const char* inputActionName, click::PlayerId playerId = 0) const;
@@ -42,6 +42,8 @@ public:
 	bool hasDevice(click::DeviceType deviceType, unsigned int deviceIndex) const;
 	const click::ActionState& getActionState(click::ActionId actionId, click::PlayerId playerId = 0) const;
 	const click::ActionValue& getInputCodeValue(click::InputCode inputCode, click::PlayerId playerId = 0) const;
+
+	void lockMouseToWindow(bool lock);
 
 private:
 	void _updateDeviceAssignment();

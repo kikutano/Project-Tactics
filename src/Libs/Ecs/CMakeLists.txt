@@ -4,10 +4,14 @@ set(SOURCES
     Component/BillboardComponent.cpp
     Component/CameraComponent.cpp
     Component/ComponentReflection.cpp
+    Component/DebugDrawingComponent.cpp
     Component/FrustumComponent.cpp
     Component/MeshComponent.cpp
+    Component/ParticleEmitterComponent.cpp
     Component/PrefabComponent.cpp
+    Component/RenderableComponent.cpp
     Component/SpriteComponent.cpp
+    Component/PhysicsComponent.cpp
     Component/TransformComponent.cpp
     Entity.cpp
     EntityComponentSystem.cpp
@@ -15,6 +19,7 @@ set(SOURCES
     PrefabManager.cpp
     System/BillboardSystem.cpp
     System/CameraSystem.cpp
+    System/DebugDrawingSystem.cpp
     System/SpriteSystem.cpp
     System/TransformSystem.cpp)
     
@@ -23,13 +28,16 @@ set(HEADERS
     Component/BillboardComponent.h
     Component/CameraComponent.h
     Component/ComponentReflection.h
+    Component/DebugDrawingComponent.h
     Component/FrustumComponent.h
     Component/MeshComponent.h
     Component/NameComponent.h
+    Component/ParticleEmitterComponent.h
+    Component/PhysicsComponent.h
     Component/PrefabComponent.h
+    Component/RenderableComponent.h
     Component/SpriteComponent.h 
     Component/TransformComponent.h
-    Component/ViewportComponent.h
     Entity.h
     Entity.inl
     EntityComponentSystem.h
@@ -37,6 +45,7 @@ set(HEADERS
     PrefabManager.h
     System/BillboardSystem.h
     System/CameraSystem.h
+    System/DebugDrawingSystem.h
     System/SpriteSystem.h
     System/TransformSystem.h)
 

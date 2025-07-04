@@ -4,23 +4,32 @@ cmake_minimum_required(VERSION 3.27 FATAL_ERROR)
 set(SOURCES
     DebugMessageHandler.cpp
     GeometryBuilder.cpp
+    Particle/Particles.cpp
+    Particle/ParticlesUpdater.cpp
+    Particle/ParticleSystem.cpp
     RenderCalls/RenderCalls.cpp
     RenderQueue.cpp
     RenderSystem.cpp
-    VertexAttributes.cpp
-    RenderStep/RenderStep.cpp)
+    RenderStep/RenderStep.cpp
+    VertexAttributes.cpp)
     
 set(HEADERS    
     BaseBuffer.h
     DebugMessageHandler.h
     GeometryBuilder.h
     IndexBuffer.h
+    Particle/Particles.h
+    Particle/ParticlesUpdater.h
+    Particle/ParticlesSerialization.h
+    Particle/ParticlesTypes.h
+    Particle/ParticleSystem.h
     RenderCalls/RenderCalls.h
     RenderQueue.h
     RenderSystem.h
+    RenderStep/RenderStep.h
     VertexBuffer.h
     VertexAttributes.h
-    RenderStep/RenderStep.h)
+    Viewport.h)
 
 set(LIB_DEPEDENCIES
     PUBLIC
@@ -29,6 +38,7 @@ set(LIB_DEPEDENCIES
     PRIVATE
     libs_utility
     libs_resource
+    libs_event
     imgui
     sdl2_wrapper)
 

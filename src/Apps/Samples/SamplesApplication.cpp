@@ -10,11 +10,14 @@
 #include "Component/RotateAroundPoint.h"
 #include "Component/RotateItem.h"
 #include "Component/TranslateItem.h"
+#include "States/DemoDebugDrawingState.h"
 #include "States/DemoMapState.h"
 #include "States/DemoParticlesState.h"
+#include "States/DemoPhysicsState.h"
 #include "States/DemoPongState.h"
 #include "States/DemoSimpleState.h"
 #include "States/DemoSpriteState.h"
+#include "States/DemoUserInterfaceState.h"
 #include "States/EmptyState.h"
 #include "States/SampleSelectionState.h"
 #include "States/SetupState.h"
@@ -28,27 +31,30 @@ namespace tactics {
 
 SamplesApplication::SamplesApplication() {
 	_addSampleFlow<DemoSpriteState>("sprite", "Sprite");
-	_addSampleFlow<DemoMapState>("map", "Map", ".lua");
+	_addSampleFlow<DemoMapState>("map", "Map");
 	_addSampleFlow<DemoParticlesState>("particles", "Particles");
 	_addSampleFlow<DemoSimpleState>("simple", "Simple");
 	_addSampleFlow<DemoPongState>("pong", "Pong");
+	_addSampleFlow<DemoUserInterfaceState>("userinterface", "UserInterface");
+	_addSampleFlow<DemoDebugDrawingState>("debugdrawing", "DebugDrawing");
+	_addSampleFlow<DemoPhysicsState>("physics", "Physics");
 	// ADD FLOW SAMPLES HERE
 }
 
 void SamplesApplication::setupComponentReflections() {
 	using namespace component;
-	defineComponentsReflection<BattleCamera,
-							   BattleCameraInput,
-							   CharacterFacing,
-							   RotateItem,
-							   RotateAroundPoint,
-							   FreeCamera,
-							   TranslateItem,
-							   BallMovement,
-							   BallBouncing,
-							   Rectangle2DCollider,
-							   PlayerMovement,
-							   PlayerMovementInput>();
+	defineReflection<BattleCamera,
+					 BattleCameraInput,
+					 CharacterFacing,
+					 RotateItem,
+					 RotateAroundPoint,
+					 FreeCamera,
+					 TranslateItem,
+					 BallMovement,
+					 BallBouncing,
+					 Rectangle2DCollider,
+					 PlayerMovement,
+					 PlayerMovementInput>();
 }
 
 HashId SamplesApplication::initialize(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
@@ -67,7 +73,7 @@ HashId SamplesApplication::initialize(ServiceLocator& serviceLocator, FsmBuilder
             .on("proceed").jumpTo("Setup")
 		.state<SetupState>("Setup", serviceLocator)
             .on("proceed").jumpTo("Selection")
-		.state<UnloadState>("Unload", serviceLocator, "common"_id)
+		.state<UnloadState>("Unload", serviceLocator, "common"_id, true)
             .on("proceed").exitFsm()
 		.state<SampleSelectionState>("Selection", serviceLocator, transitionToTrigger, _sampleFlows)
 			.on("exit").jumpTo("Unload")

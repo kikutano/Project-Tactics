@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Viewport.h"
+
+#include <Libs/Event/EventsListener.h>
 #include <Libs/Resource/IniFile/IniFile.h>
 
 #include <glm/glm.hpp>
@@ -7,6 +10,7 @@
 #include <vector>
 
 struct SDL_Window;
+union SDL_Event;
 
 namespace tactics {
 namespace resource {
@@ -15,17 +19,24 @@ class IniFile;
 
 class DebugMessageHandler;
 class RenderQueue;
+struct Viewport;
 
-class RenderSystem {
+class RenderSystem : public EventsListener {
 public:
 	RenderSystem(std::shared_ptr<resource::IniFile> configFile);
 	~RenderSystem();
 
 	RenderQueue& createRenderQueue();
+	void destroyRenderQueues();
 
 	void render();
 
-	glm::vec2 getWindowSize() const;
+	const glm::u32vec2& getWindowSize() const;
+
+	void setViewport(const glm::vec2& position, const glm::vec2& size, glm::vec4 clearColor);
+	const Viewport& getViewport() const;
+
+	bool onEvent(const SDL_Event& event) override;
 
 private:
 	void _createWindow();
@@ -50,5 +61,7 @@ private:
 	std::unique_ptr<DebugMessageHandler> _debugMessageHandler;
 	std::vector<std::unique_ptr<RenderQueue>> _renderQueues;
 	std::shared_ptr<resource::IniFile> _configFile;
+	Viewport _viewport;
+	glm::u32vec2 _windowSize;
 };
 } // namespace tactics

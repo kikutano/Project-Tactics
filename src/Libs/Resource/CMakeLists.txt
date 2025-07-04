@@ -2,6 +2,9 @@
 cmake_minimum_required(VERSION 3.27 FATAL_ERROR)
 
 set(SOURCES
+    DataSet/DataSet.cpp
+    DataSet/DataSetLoader.cpp
+    DataSet/DataSetSystem.cpp
     IniFile/IniFile.cpp
     IniFile/IniFileLoader.cpp
     Input/InputAction.cpp
@@ -13,6 +16,8 @@ set(SOURCES
     Material/Uniforms.cpp
     Mesh/Mesh.cpp
     Mesh/MeshLoader.cpp
+    ParticleEffect/ParticleEffect.cpp
+    ParticleEffect/ParticleEffectLoader.cpp
     Prefab/Prefab.cpp
     Prefab/PrefabLoader.cpp
     Resource.cpp
@@ -30,6 +35,10 @@ set(SOURCES
     Texture/TextureLoader.cpp)
     
 set(HEADERS
+    DataSet/DataSet.h
+    DataSet/DataSetLoader.h
+    DataSet/DataSetReflection.h
+    DataSet/DataSetSystem.h
     IniFile/IniFile.h
     IniFile/IniFileLoader.h
     Input/InputAction.h
@@ -41,6 +50,8 @@ set(HEADERS
     Material/Uniforms.h
     Mesh/Mesh.h
     Mesh/MeshLoader.h
+    ParticleEffect/ParticleEffect.h
+    ParticleEffect/ParticleEffectLoader.h
     Prefab/Prefab.h
     Prefab/PrefabLoader.h
     Resource.h

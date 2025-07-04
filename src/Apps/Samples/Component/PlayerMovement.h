@@ -14,13 +14,13 @@ namespace tactics::component {
 struct PlayerMovement {
 	bool active;
 
-	REFLECT(PlayerMovement, active);
+	COMPONENT(PlayerMovement, active);
 };
 
 struct PlayerMovementInput {
 	resource::InputAction::Ptr movePlayer;
 
-	REFLECT(PlayerMovementInput, movePlayer);
+	COMPONENT(PlayerMovementInput, movePlayer);
 };
 
 class PlayerMovementSystem {

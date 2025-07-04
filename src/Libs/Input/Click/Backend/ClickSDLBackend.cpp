@@ -2,6 +2,7 @@
 
 #include "../Click.h"
 
+#include <SDL.h>
 #include <optional>
 
 namespace click {
@@ -283,20 +284,6 @@ static InputCode _toGamepadInputCode(SDL_GameControllerButton sdlGamepadButton) 
 	}
 }
 
-/*
-static InputCode _toGamepadInputCode(SDL_GameControllerAxis sdlAxis) {
-	switch (sdlAxis) {
-	case SDL_CONTROLLER_AXIS_LEFTX		 : return InputCode::AxisLeftX;
-	case SDL_CONTROLLER_AXIS_LEFTY		 : return InputCode::AxisLeftY;
-	case SDL_CONTROLLER_AXIS_RIGHTX		 : return InputCode::AxisRightX;
-	case SDL_CONTROLLER_AXIS_RIGHTY		 : return InputCode::AxisRightY;
-	case SDL_CONTROLLER_AXIS_TRIGGERLEFT : return InputCode::AxisTriggerLeft;
-	case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: return InputCode::AxisTriggerRight;
-	default								 : return InputCode::Unknown;
-	}
-}
-*/
-
 static InputCode _toMouseInputCode(Uint8 sdlButton) {
 	switch (sdlButton) {
 	case SDL_BUTTON_LEFT  : return InputCode::LeftButton;
@@ -363,7 +350,7 @@ void _processKeyboardButtonEvent(float axisValue, SDL_Keycode keyCode, Uint8 rep
 	}
 }
 
-void processSdlEvents(SDL_Event& event) {
+void processSdlEvents(const SDL_Event& event) {
 	switch (event.type) {
 	case SDL_JOYDEVICEADDED: {
 		SDL_GameController* gameController = SDL_GameControllerOpen(event.jdevice.which);
@@ -411,10 +398,17 @@ void processSdlEvents(SDL_Event& event) {
 
 void updateSdlBackend() {
 	{
-		auto x = 0;
-		auto y = 0;
+		auto x{0};
+		auto y{0};
+		auto xRel{0};
+		auto yRel{0};
 		SDL_GetMouseState(&x, &y);
-		click::updateMouse(_mouseDeviceId(), static_cast<float>(x), static_cast<float>(y));
+		SDL_GetRelativeMouseState(&xRel, &yRel);
+		click::updateMouse(_mouseDeviceId(),
+						   static_cast<float>(x),
+						   static_cast<float>(y),
+						   static_cast<float>(xRel),
+						   static_cast<float>(yRel));
 	}
 
 	for (auto& gamepadDeviceId : click::gamepads()) {

@@ -6,18 +6,23 @@
 
 namespace tactics::component {
 
-void BallMovementSystem::update(const ecs_view<Transform, TranslateItem, BallMovement>& view,
+void BallMovementSystem::update(entt::registry& registry,
+								const ecs_view<Transform, TranslateItem, BallMovement>& view,
 								const ecs_view<Transform, Rectangle2DCollider>& viewCollider) {
-	view.each([&viewCollider](auto& ballTransform, auto& translateItem, auto& /* ballMovement*/) {
-		_updateCollisionWithWall(ballTransform, translateItem);
+	view.each(
+		[&registry, &viewCollider](auto entity, auto& ballTransform, auto& translateItem, auto& /* ballMovement*/) {
+			_updateCollisionWithWall(registry, entity, ballTransform, translateItem);
 
-		viewCollider.each([&ballTransform, &translateItem](auto& playerTransform, auto& collider) {
-			_updateCollisionWithPlayer(ballTransform, translateItem, playerTransform, collider);
+			viewCollider.each([&ballTransform, &translateItem](auto& playerTransform, auto& collider) {
+				_updateCollisionWithPlayer(ballTransform, translateItem, playerTransform, collider);
+			});
 		});
-	});
 }
 
-void BallMovementSystem::_updateCollisionWithWall(Transform& transform, TranslateItem& translateItem) {
+void BallMovementSystem::_updateCollisionWithWall(entt::registry& registry,
+												  entt::entity entity,
+												  Transform& transform,
+												  TranslateItem& translateItem) {
 	if (transform.getPosition().y > 2.5f) {
 		translateItem.axis.y *= -1.0f;
 	} else if (transform.getPosition().y < -2.5f) {
@@ -26,11 +31,10 @@ void BallMovementSystem::_updateCollisionWithWall(Transform& transform, Translat
 
 	if (transform.getPosition().x > 5.0f) {
 		translateItem.axis.x *= -1.0f;
-		transform.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-
+		registry.emplace_or_replace<CollideWithWall>(entity, WallType::Right);
 	} else if (transform.getPosition().x < -5.0f) {
 		translateItem.axis.x *= -1.0f;
-		transform.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		registry.emplace_or_replace<CollideWithWall>(entity, WallType::Left);
 	}
 }
 

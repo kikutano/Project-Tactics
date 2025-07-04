@@ -43,6 +43,11 @@ void Shader::setUniform(std::string_view uniformName, const glm::mat4& value) {
 	render::pipeline::setShaderVar(uniformLocation, value);
 }
 
+bool Shader::hasUniform(std::string_view uniformName) const {
+	return _uniformsMapping.find(uniformName) != _uniformsMapping.end() ||
+		   render::pipeline::getShaderVarLocation(rendererId, uniformName.data()) != -1;
+}
+
 int Shader::_getAndCacheUniform(std::string_view uniformName) {
 	if (auto itr = _uniformsMapping.find(uniformName); itr != _uniformsMapping.end()) {
 		return itr->second;
@@ -50,7 +55,7 @@ int Shader::_getAndCacheUniform(std::string_view uniformName) {
 
 	auto location = render::pipeline::getShaderVarLocation(rendererId, uniformName.data());
 	if (location == -1) {
-		throw TACTICS_EXCEPTION("Uniform '{}' not found in shader program.", uniformName);
+		TACTICS_EXCEPTION("Uniform '{}' not found in shader program.", uniformName);
 	}
 	_uniformsMapping[uniformName] = location;
 	return location;

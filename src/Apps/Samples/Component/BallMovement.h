@@ -14,14 +14,29 @@ struct BallMovement {
 	float speed;
 	glm::vec3 axis;
 
-	REFLECT(BallMovement, speed, axis)
+	COMPONENT(BallMovement, speed, axis)
+};
+
+enum class WallType {
+	Left,
+	Right,
+};
+
+struct CollideWithWall {
+	WallType wallType;
+
+	COMPONENT(CollideWithWall, wallType)
 };
 
 class BallMovementSystem {
 public:
-	static void update(const ecs_view<Transform, TranslateItem, BallMovement>& view,
+	static void update(entt::registry& registry,
+					   const ecs_view<Transform, TranslateItem, BallMovement>& view,
 					   const ecs_view<Transform, Rectangle2DCollider>& viewCollider);
-	static void _updateCollisionWithWall(Transform& transform, TranslateItem& translateItem);
+	static void _updateCollisionWithWall(entt::registry& registry,
+										 entt::entity entity,
+										 Transform& transform,
+										 TranslateItem& translateItem);
 	static void _updateCollisionWithPlayer(Transform& ballTransform,
 										   TranslateItem& ballTranslate,
 										   Transform& playerTransform,

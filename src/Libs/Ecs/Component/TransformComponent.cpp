@@ -46,10 +46,19 @@ void Transform::rotate(float radians, const glm::vec3& axis) {
 	_dirty = true;
 }
 
+void Transform::rotate(const glm::quat& amountToRotate) {
+	rotation *= amountToRotate;
+	_dirty = true;
+}
+
 void Transform::setScale(const glm::vec3& newScale) {
 	scale = newScale;
 	transformMatrix = glm::scale(transformMatrix, scale);
 	_dirty = true;
+}
+
+void Transform::setScale(float newScale) {
+	setScale({newScale, newScale, newScale});
 }
 
 const glm::vec3& Transform::getPosition() const {
@@ -63,11 +72,7 @@ const glm::quat& Transform::getRotation() const {
 const glm::mat4x4& Transform::computeMatrix() {
 	if (_dirty) {
 		_dirty = false;
-		glm::mat4 pivotTransform = glm::translate(glm::mat4(1.0f), position);
-		glm::mat4 rotationTransform = glm::mat4_cast(rotation);
-		glm::mat4 finalTransform = glm::translate(pivotTransform * rotationTransform, -position);
-		transformMatrix = finalTransform;
-		transformMatrix = glm::translate(transformMatrix, position);
+		transformMatrix = glm::translate(glm::mat4(1.0f), position) * glm::mat4_cast(rotation);
 		transformMatrix = glm::scale(transformMatrix, scale);
 	}
 	return transformMatrix;

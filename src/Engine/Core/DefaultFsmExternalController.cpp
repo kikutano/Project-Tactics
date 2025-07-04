@@ -2,6 +2,8 @@
 
 #include <Libs/Fsm/FsmBuilder.h>
 
+#include <SDL_events.h>
+
 namespace tactics {
 
 FsmAction DefaultFsmExternalController::update(const HashId& currentStateName) {
@@ -17,7 +19,7 @@ const HashId& DefaultFsmExternalController::getCurrentStateName() const {
 	return _currentStateName;
 }
 
-bool DefaultFsmExternalController::onEvent(SDL_Event& event) {
+bool DefaultFsmExternalController::onEvent(const SDL_Event& event) {
 	if (event.type == SDL_QUIT) {
 		_nextTransition = FsmAction::transition(FsmBuilder::appExitRequestTransition);
 	}
