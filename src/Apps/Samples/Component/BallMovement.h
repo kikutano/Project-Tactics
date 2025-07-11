@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Rectangle2DCollider.h"
+#include "RotateItem.h"
 #include "TranslateItem.h"
 
 #include <Libs/Ecs/Component/TransformComponent.h>
@@ -31,7 +32,7 @@ struct CollideWithWall {
 class BallMovementSystem {
 public:
 	static void update(entt::registry& registry,
-					   const ecs_view<Transform, TranslateItem, BallMovement>& view,
+					   const ecs_view<Transform, TranslateItem, BallMovement, RotateItem>& view,
 					   const ecs_view<Transform, Rectangle2DCollider>& viewCollider);
 	static void _updateCollisionWithWall(entt::registry& registry,
 										 entt::entity entity,
@@ -40,6 +41,7 @@ public:
 	static void _updateCollisionWithPlayer(Transform& ballTransform,
 										   TranslateItem& ballTranslate,
 										   Transform& playerTransform,
-										   Rectangle2DCollider& playerCollider);
+										   Rectangle2DCollider& playerCollider,
+										   RotateItem& rotateItem);
 };
 } // namespace tactics::component

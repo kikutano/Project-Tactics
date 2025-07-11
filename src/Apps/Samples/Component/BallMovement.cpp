@@ -1,22 +1,26 @@
 #include "BallMovement.h"
 
 #include "Rectangle2DCollider.h"
+#include "RotateItem.h"
 
 #include <Libs/Utility/Time/EngineTime.h>
 
 namespace tactics::component {
 
 void BallMovementSystem::update(entt::registry& registry,
-								const ecs_view<Transform, TranslateItem, BallMovement>& view,
+								const ecs_view<Transform, TranslateItem, BallMovement, RotateItem>& view,
 								const ecs_view<Transform, Rectangle2DCollider>& viewCollider) {
-	view.each(
-		[&registry, &viewCollider](auto entity, auto& ballTransform, auto& translateItem, auto& /* ballMovement*/) {
-			_updateCollisionWithWall(registry, entity, ballTransform, translateItem);
+	view.each([&registry, &viewCollider](auto entity,
+										 auto& ballTransform,
+										 auto& translateItem,
+										 auto& /* ballMovement*/,
+										 auto& rotateItem) {
+		_updateCollisionWithWall(registry, entity, ballTransform, translateItem);
 
-			viewCollider.each([&ballTransform, &translateItem](auto& playerTransform, auto& collider) {
-				_updateCollisionWithPlayer(ballTransform, translateItem, playerTransform, collider);
-			});
+		viewCollider.each([&ballTransform, &translateItem, &rotateItem](auto& playerTransform, auto& collider) {
+			_updateCollisionWithPlayer(ballTransform, translateItem, playerTransform, collider, rotateItem);
 		});
+	});
 }
 
 void BallMovementSystem::_updateCollisionWithWall(entt::registry& registry,
@@ -41,11 +45,28 @@ void BallMovementSystem::_updateCollisionWithWall(entt::registry& registry,
 void BallMovementSystem::_updateCollisionWithPlayer(Transform& ballTransform,
 													TranslateItem& ballTranslate,
 													Transform& /*playerTransform*/,
-													Rectangle2DCollider& playerCollider) {
+													Rectangle2DCollider& playerCollider,
+													RotateItem& rotateItem) {
 	auto nextPos =
 		ballTransform.getPosition() + ballTranslate.axis * ballTranslate.speed * EngineTime::fixedDeltaTime<float>();
 	if (playerCollider.intersect(nextPos)) {
 		ballTranslate.axis.x *= -1;
+
+		if (ballTranslate.speed < 4.5f) {
+			ballTranslate.speed *= 1.1f;
+			rotateItem.speed *= 1.1f;
+		}
+
+		auto pos = ballTransform.getPosition();
+
+		// Adjust the position of the ball to avoid getting stuck in the player collider
+		if (ballTranslate.axis.x < 0) {
+			pos.x -= 0.15f;
+		} else {
+			pos.x += 0.15f;
+		}
+
+		ballTransform.setPosition(pos);
 	}
 }
 
