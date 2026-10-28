@@ -3,10 +3,9 @@
 #include "EventsListener.h"
 
 #include <Libs/Input/InputSystem.h>
+#include <Libs/Utility/Exception.h>
 
 #include <SDL.h>
-#include <exception>
-#include <format>
 #include <imgui/backends/imgui_impl_sdl2.h>
 #include <ranges>
 
@@ -29,7 +28,7 @@ void EventsSystem::registerEventsListener(EventsListener* listener) {
 	if (auto itr = std::ranges::find(_eventsListeners, listener); itr == _eventsListeners.end()) {
 		_eventsListeners.push_back(listener);
 	} else {
-		throw std::exception(std::format("Attempted to add an already registered listener.").c_str());
+		TACTICS_EXCEPTION("Attempted to add an already registered listener.");
 	}
 }
 
@@ -37,7 +36,7 @@ void EventsSystem::unregisterEventsListener(EventsListener* listener) {
 	if (auto itr = std::ranges::find(_eventsListeners, listener); itr != _eventsListeners.end()) {
 		_eventsListeners.erase(itr);
 	} else {
-		throw std::exception(std::format("Attempted to add an already registered listener.").c_str());
+		TACTICS_EXCEPTION("Attempted to remove a listener that was not registered.");
 	}
 }
 
