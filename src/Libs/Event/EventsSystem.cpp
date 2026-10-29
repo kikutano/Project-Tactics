@@ -19,7 +19,9 @@ void EventsSystem::update() {
 		ImGui_ImplSDL2_ProcessEvent(&event);
 		_inputSystem.processEvents(event);
 		for (auto& listener : _eventsListeners) {
-			listener->onEvent(event);
+			if (listener->onEvent(event)) {
+				break;
+			}
 		}
 	}
 }
