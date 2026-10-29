@@ -25,7 +25,7 @@
     },
     "Rectangle2DCollider": {
         "heightFromCenter": 0.5,
-        "widthFromCenter": 0.2
+        "widthFromCenter": 0.125
     },
     "Mesh": {
         "mesh": "quad",

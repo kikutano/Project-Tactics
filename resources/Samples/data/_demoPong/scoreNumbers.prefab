@@ -6,8 +6,8 @@
             "z": 0
         },
         "scale": {
-            "x": 1.0,
-            "y": 1.0,
+            "x": 0.4,
+            "y": 0.48,
             "z": 1.0
         }
     },
@@ -21,6 +21,14 @@
     },
     "Sprite": {
         "spriteSheet": "score0",
-        "spriteIndex": 1
+        "spriteIndex": 0
+    },
+    "ScoreDisplay": {
+        "side": "Left",
+        "baseScale": {
+            "x": 0.4,
+            "y": 0.48,
+            "z": 1.0
+        }
     }
 }

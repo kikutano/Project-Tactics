@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PongMatch.h"
 #include "Rectangle2DCollider.h"
 #include "RotateItem.h"
 #include "TranslateItem.h"
@@ -12,10 +13,14 @@
 
 namespace tactics::component {
 struct BallMovement {
-	float speed;
-	glm::vec3 axis;
+	float radius = 0.1f;
+	float maxSpeed = 4.5f;
+	// Speed multiplier applied every time the ball is hit by a player
+	float speedMultiplier = 1.1f;
+	// Angle in degrees of the bounce when the ball hits the very edge of a player
+	float maxBounceAngle = 50.0f;
 
-	COMPONENT(BallMovement, speed, axis)
+	COMPONENT(BallMovement, radius, maxSpeed, speedMultiplier, maxBounceAngle)
 };
 
 enum class WallType {
@@ -31,17 +36,19 @@ struct CollideWithWall {
 
 class BallMovementSystem {
 public:
-	static void update(entt::registry& registry,
-					   const ecs_view<Transform, TranslateItem, BallMovement, RotateItem>& view,
-					   const ecs_view<Transform, Rectangle2DCollider>& viewCollider);
+	static void update(entt::registry& registry);
+
+private:
 	static void _updateCollisionWithWall(entt::registry& registry,
 										 entt::entity entity,
+										 const PongMatch& match,
+										 const BallMovement& ballMovement,
 										 Transform& transform,
 										 TranslateItem& translateItem);
-	static void _updateCollisionWithPlayer(Transform& ballTransform,
+	static void _updateCollisionWithPlayer(const BallMovement& ballMovement,
+										   Transform& ballTransform,
 										   TranslateItem& ballTranslate,
-										   Transform& playerTransform,
-										   Rectangle2DCollider& playerCollider,
-										   RotateItem& rotateItem);
+										   RotateItem& rotateItem,
+										   const Rectangle2DCollider& playerCollider);
 };
 } // namespace tactics::component

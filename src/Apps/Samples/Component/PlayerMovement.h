@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PongMatch.h"
+#include "Rectangle2DCollider.h"
 #include "TranslateItem.h"
 
 #include <Libs/Ecs/Component/TransformComponent.h>
@@ -12,7 +14,7 @@
 
 namespace tactics::component {
 struct PlayerMovement {
-	bool active;
+	bool active = true;
 
 	COMPONENT(PlayerMovement, active);
 };

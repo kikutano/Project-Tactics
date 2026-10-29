@@ -18,6 +18,8 @@ struct Rectangle2DCollider {
 
 	void updateCenter(const glm::vec3& newCenter);
 	bool intersect(const glm::vec3& position);
+	// True if a circle of the given radius centered in position overlaps the rectangle
+	[[nodiscard]] bool overlaps(const glm::vec3& position, float radius) const;
 
 	COMPONENT(Rectangle2DCollider, heightFromCenter, widthFromCenter, center)
 };

@@ -1,8 +1,9 @@
 #pragma once
 
+#include "../Component/PongMatch.h"
 #include "../SamplesUtils.h"
 
-#include <Libs/Ecs/Entity.h>
+#include <string>
 
 namespace tactics {
 
@@ -14,11 +15,7 @@ public:
 	void exit() override;
 
 private:
-	Entity _playerLeft;
-	Entity _playerRight;
-	Entity _ball;
-	Entity _scoreLeft;
-	void resetPlayerPosition();
+	void _createScoreDisplay(const std::string& name, component::PlayerSide side, float positionX);
 };
 
 } // namespace tactics

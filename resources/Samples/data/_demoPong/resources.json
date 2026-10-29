@@ -91,6 +91,9 @@
             },
             "background": {
                 "path": "_demoPong/background.prefab"
+            },
+            "pongMatch": {
+                "path": "_demoPong/pongMatch.prefab"
             }
         },
         "InputAction": {
@@ -101,6 +104,9 @@
             "movePlayer2": {
                 "type": "Scalar",
                 "normalized": true
+            },
+            "restartMatch": {
+                "type": "Scalar"
             }
         },
         "InputMap": {
@@ -175,6 +181,24 @@
                                         "axis": "X"
                                     }
                                 ]
+                            }
+                        ]
+                    },
+                    {
+                        "action": "restartMatch",
+                        "gestures": [
+                            {
+                                "gesture": {
+                                    "type": "simple",
+                                    "input": "KeySpace"
+                                },
+                                "conditions": [
+                                    {
+                                        "type": "press",
+                                        "actuationThreshold": 0.5
+                                    }
+                                ],
+                                "modifiers": []
                             }
                         ]
                     }
