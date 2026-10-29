@@ -4,32 +4,25 @@
 
 namespace tactics::component {
 
-void PlayerMovementSystem::onKeyPress(SDL_KeyboardEvent& event,
-									  const ecs_view<Transform, TranslateItem, PlayerMovement>& view) {
-	view.each([event](auto& transform, auto& translateItem, auto& playerMovement) {
-		if (event.keysym.sym == playerMovement.keyCodeDown) {
-			if (transform.getPosition().y > -2.1f) {
-				translateItem.axis = Vector3::down;
-			} else {
-				translateItem.axis = Vector3::zero;
-			}
-		} else if (event.keysym.sym == playerMovement.keyCodeUp) {
-			if (transform.getPosition().y < 2.1f) {
-				translateItem.axis = Vector3::up;
-			} else {
-				translateItem.axis = Vector3::zero;
-			}
-		}
-	});
+void PlayerMovementSystem::update(entt::registry& registry) {
+	_updateInputs(registry);
 }
 
-void PlayerMovementSystem::onKeyRelease(SDL_KeyboardEvent& event,
-										const ecs_view<Transform, TranslateItem, PlayerMovement>& view) {
-	view.each([event](auto& /*transform*/, auto& translateItem, auto& playerMovement) {
-		if (event.keysym.sym == playerMovement.keyCodeUp || event.keysym.sym == playerMovement.keyCodeDown) {
+void PlayerMovementSystem::_updateInputs(entt::registry& registry) {
+	float const verticalLimit = 2.5f;
+
+	auto view = registry.view<TranslateItem, Transform, PlayerMovement, PlayerMovementInput>();
+	for (auto [entity, translateItem, transform, playerMovement, input] : view.each()) {
+		auto& value = input.movePlayer->getInputValue();
+
+		if (value.scalar > 0 && transform.getPosition().y > verticalLimit) {
 			translateItem.axis = Vector3::zero;
+		} else if (value.scalar < 0 && transform.getPosition().y < -verticalLimit) {
+			translateItem.axis = Vector3::zero;
+		} else {
+			translateItem.axis = Vector3::up * value.scalar;
 		}
-	});
+	}
 }
 
 } // namespace tactics::component

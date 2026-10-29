@@ -18,6 +18,7 @@ private:
 	Entity _playerRight;
 	Entity _ball;
 	Entity _scoreLeft;
+	void resetPlayerPosition();
 };
 
 } // namespace tactics

@@ -1,23 +1,32 @@
 #include "BallMovement.h"
 
 #include "Rectangle2DCollider.h"
+#include "RotateItem.h"
 
 #include <Libs/Utility/Time/EngineTime.h>
 
 namespace tactics::component {
 
-void BallMovementSystem::update(const ecs_view<Transform, TranslateItem, BallMovement>& view,
+void BallMovementSystem::update(entt::registry& registry,
+								const ecs_view<Transform, TranslateItem, BallMovement, RotateItem>& view,
 								const ecs_view<Transform, Rectangle2DCollider>& viewCollider) {
-	view.each([&viewCollider](auto& ballTransform, auto& translateItem, auto& /* ballMovement*/) {
-		_updateCollisionWithWall(ballTransform, translateItem);
+	view.each([&registry, &viewCollider](auto entity,
+										 auto& ballTransform,
+										 auto& translateItem,
+										 auto& /* ballMovement*/,
+										 auto& rotateItem) {
+		_updateCollisionWithWall(registry, entity, ballTransform, translateItem);
 
-		viewCollider.each([&ballTransform, &translateItem](auto& playerTransform, auto& collider) {
-			_updateCollisionWithPlayer(ballTransform, translateItem, playerTransform, collider);
+		viewCollider.each([&ballTransform, &translateItem, &rotateItem](auto& playerTransform, auto& collider) {
+			_updateCollisionWithPlayer(ballTransform, translateItem, playerTransform, collider, rotateItem);
 		});
 	});
 }
 
-void BallMovementSystem::_updateCollisionWithWall(Transform& transform, TranslateItem& translateItem) {
+void BallMovementSystem::_updateCollisionWithWall(entt::registry& registry,
+												  entt::entity entity,
+												  Transform& transform,
+												  TranslateItem& translateItem) {
 	if (transform.getPosition().y > 2.5f) {
 		translateItem.axis.y *= -1.0f;
 	} else if (transform.getPosition().y < -2.5f) {
@@ -26,52 +35,39 @@ void BallMovementSystem::_updateCollisionWithWall(Transform& transform, Translat
 
 	if (transform.getPosition().x > 5.0f) {
 		translateItem.axis.x *= -1.0f;
-		transform.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-
+		registry.emplace_or_replace<CollideWithWall>(entity, WallType::Right);
 	} else if (transform.getPosition().x < -5.0f) {
 		translateItem.axis.x *= -1.0f;
-		transform.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		registry.emplace_or_replace<CollideWithWall>(entity, WallType::Left);
 	}
 }
 
 void BallMovementSystem::_updateCollisionWithPlayer(Transform& ballTransform,
 													TranslateItem& ballTranslate,
 													Transform& /*playerTransform*/,
-													Rectangle2DCollider& playerCollider) {
-	auto ballDir = ballTranslate.axis;
-	if (playerCollider.intersect(ballTransform.getPosition())) {
-		if (ballDir.x > 0) {
-			ballTranslate.axis.x = -1.0f;
+													Rectangle2DCollider& playerCollider,
+													RotateItem& rotateItem) {
+	auto nextPos =
+		ballTransform.getPosition() + ballTranslate.axis * ballTranslate.speed * EngineTime::fixedDeltaTime<float>();
+	if (playerCollider.intersect(nextPos)) {
+		ballTranslate.axis.x *= -1;
+
+		if (ballTranslate.speed < 4.5f) {
+			ballTranslate.speed *= 1.1f;
+			rotateItem.speed *= 1.1f;
+		}
+
+		auto pos = ballTransform.getPosition();
+
+		// Adjust the position of the ball to avoid getting stuck in the player collider
+		if (ballTranslate.axis.x < 0) {
+			pos.x -= 0.15f;
 		} else {
-			ballTranslate.axis.x = 1.0f;
+			pos.x += 0.15f;
 		}
+
+		ballTransform.setPosition(pos);
 	}
-
-	/*auto ballYPos = ballTransform.getPosition().y;
-	auto ballXPos = ballTransform.getPosition().x;
-	auto ballDir = ballTranslate.axis;
-
-	if (ballDir.x < 0) {
-		auto leftStickCollUpRightXPos = playerTransform.getPosition().x + 0.2f;
-		auto leftStickCollUpRightYPos = playerTransform.getPosition().y + 0.5f;
-		auto leftStickCollDownRightYPos = playerTransform.getPosition().y - 0.5f;
-
-		if (ballYPos < leftStickCollUpRightYPos && ballYPos > leftStickCollDownRightYPos) {
-			if (ballXPos < leftStickCollUpRightXPos + 0.01f && ballXPos > leftStickCollUpRightXPos - 0.01f) {
-				ballTranslate.axis.x = 1.0f;
-			}
-		}
-	} else {
-		auto rightStickCollUpRightXPos = playerTransform.getPosition().x - 0.2f;
-		auto rightStickCollUpRightYPos = playerTransform.getPosition().y + 0.5f;
-		auto rightStickCollDownRightYPos = playerTransform.getPosition().y - 0.5f;
-
-		if (ballYPos < rightStickCollUpRightYPos && ballYPos > rightStickCollDownRightYPos) {
-			if (ballXPos > rightStickCollUpRightXPos - 0.01f && ballXPos < rightStickCollUpRightXPos + 0.01f) {
-				ballTranslate.axis.x = -1.0f;
-			}
-		}
-	}*/
 }
 
 } // namespace tactics::component

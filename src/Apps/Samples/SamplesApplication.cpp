@@ -53,7 +53,8 @@ void SamplesApplication::setupComponentReflections() {
 					 BallMovement,
 					 BallBouncing,
 					 Rectangle2DCollider,
-					 PlayerMovement>();
+					 PlayerMovement,
+					 PlayerMovementInput>();
 }
 
 HashId SamplesApplication::initialize(ServiceLocator& serviceLocator, FsmBuilder& fsmBuilder) {
